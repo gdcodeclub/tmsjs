@@ -1,0 +1,11 @@
+{
+  "name": "tmsjs",
+  "version": "1.0.0",
+  "description": "TMS client in JavaScript",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "",
+  "license": "ISC"
+}
