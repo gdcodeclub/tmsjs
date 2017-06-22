@@ -1,7 +1,7 @@
 # TMSJS
 Express app for demoing TMS
 
-Currently only displays from addresses for an account
+Currently only displays from addresses for an account, but there's more it will do: http://developer.govdelivery.com/api/tms/
 
 ## Up...
 1. Install npm (need instructions)
