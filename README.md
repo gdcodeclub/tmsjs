@@ -8,6 +8,7 @@ Currently only displays from addresses for an account, but there's more it will 
 1. Install project dependencies with `npm install`
 
 ## ...and running
+1. Set TMS_URL to your URL with `export TMS_URL=https://stage-tms.govdelivery.com`
 1. Set TMS_KEY to your API key with `export TMS_KEY=abcd123`
 1. `node app.js`
 1. http://localhost:8080/fa
