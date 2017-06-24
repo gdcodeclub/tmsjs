@@ -2,8 +2,10 @@ var express = require('express')
 var router = express.Router()
 var axios = require('axios')
 var engine = axios.create({
-  baseURL: 'https://stage-tms.govdelivery.com',
+  baseURL: process.env.TMS_URL,
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
+
+console.log('TMS baseURL set to ' + process.env.TMS_URL)
 
 router.get('/fa', function(req, res){
   return engine
