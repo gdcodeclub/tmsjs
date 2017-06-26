@@ -15,7 +15,7 @@ router.get('/fa', function(req, res){
         res.render('../views/account_info', {data: result.data})
       }).catch(function(error){
         console.log('error getting data from TMS: did you set TMS_KEY?', error)
-        return false
+        res.redirect('/')
       })
 })
 
