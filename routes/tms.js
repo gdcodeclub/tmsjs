@@ -19,4 +19,16 @@ router.get('/fa', function(req, res){
       })
 })
 
+router.get('/m', function(req, res){
+  return engine
+      .get('/messages/email')
+      .then(function(result){
+        console.log(result.data)
+        res.render('../views/messages', {data: result.data})
+      }).catch(function(error){
+        console.log('error getting data from TMS: did you set TMS_KEY?', error)
+        res.redirect('/')
+      })
+})
+
 module.exports = router
