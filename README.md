@@ -14,3 +14,8 @@ Currently only displays from addresses for an account, but there's more it will 
 1. Set TMS_KEY to your API key with `export TMS_KEY=abcd123`
 1. `node app.js` or `npm start`
 1. http://localhost:8080/fa
+
+## Tests
+```
+npm run test
+```
