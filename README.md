@@ -15,6 +15,7 @@ Currently only displays from addresses for an account, but there's more it will 
 1. `node app.js` or `npm start`
 1. http://localhost:8080/fa
 
+
 ### Using Docker
 Docker will handle all of the installation, project setup and deploy for you _if_ you have Docker installed on your machine.
 
@@ -25,3 +26,8 @@ Every time you add JavaScript libraries, make a change to Docker components, or 
 
 #### Run
 To start the container run `docker-compose up -d` and access the application at http://localhost:8081
+
+## Tests
+```
+npm run test
+```
