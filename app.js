@@ -4,7 +4,6 @@ const methodOverride = require('method-override')
 const request = require('request')
 const tmsRoutes = require('./routes/tms')
 const port = process.env.PORT ||  8080
-const ip = process.env.IP || 'localhost'
 
 const mongoose = require('mongoose')
 const databaseUrl = process.env.DATABASEURL || 'mongodb://localhost/tmsjs'
@@ -18,8 +17,8 @@ app.use(express.static(__dirname + '/public'))
 app.use(methodOverride('_method'))
 app.use(tmsRoutes)
 
-const server = app.listen(port, ip, function(){
-  console.log('listening at ' + ip + ':' + port)
+const server = app.listen(port, function(){
+  console.log('listening at ' + port)
 })
 
 module.exports = server
