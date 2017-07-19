@@ -1,7 +1,7 @@
-var express = require('express')
-var router = express.Router()
-var axios = require('axios')
-var engine = axios.create({
+const express = require('express')
+const router = express.Router()
+const axios = require('axios')
+const engine = axios.create({
   baseURL: process.env.TMS_URL,
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
 
@@ -11,7 +11,6 @@ router.get('/fa', function(req, res){
   return engine
       .get('/from_addresses')
       .then(function(result){
-        console.log(result.data)
         res.render('../views/account_info', {data: result.data})
       }).catch(function(error){
         console.log('error getting data from TMS: did you set TMS_KEY?', error)
@@ -23,7 +22,6 @@ router.get('/m', function(req, res){
   return engine
       .get('/messages/email')
       .then(function(result){
-        console.log(result.data)
         res.render('../views/messages', {data: result.data})
       }).catch(function(error){
         console.log('error getting data from TMS: did you set TMS_KEY?', error)
