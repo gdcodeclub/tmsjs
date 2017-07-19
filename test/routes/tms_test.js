@@ -1,3 +1,7 @@
+// move these to test helper at some point
+process.env.TMS_URL = 'https://fake.tms.url.com'
+process.env.TMS_KEY = 'hU5Hn0w'
+
 const agent = require('supertest').agent(require('../../app'))
 const chai = require('chai')
 const chaiHttp = require('chai-http')
