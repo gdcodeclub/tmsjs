@@ -5,7 +5,6 @@ process.env.TMS_KEY = 'hU5Hn0w'
 const agent = require('supertest').agent(require('../../app'))
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-const http = require('http')
 const nock = require('nock')
 const should = chai.should()
 
