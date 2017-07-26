@@ -33,7 +33,6 @@ describe('routes', () => {
       .get('/messages/email')
       .reply(200, [{subject: 'first email'}, {'subject': 'second email'}]);
 
-
     agent
       .get('/m')
       .end((err, res) => {
@@ -50,7 +49,6 @@ describe('routes', () => {
     nock(process.env.TMS_URL)
       .get('/messages/sms')
       .reply(200, [{body: 'welcome to our text'}, {'body': 'sms rulz'}]);
-
 
     agent
       .get('/s')
