@@ -22,7 +22,18 @@ router.get('/m', function(req, res){
   return engine
       .get('/messages/email')
       .then(function(result){
-        res.render('../views/messages', {data: result.data})
+        res.render('../views/email_messages', {data: result.data})
+      }).catch(function(error){
+        console.log('error getting data from TMS: did you set TMS_KEY?', error)
+        res.redirect('/')
+      })
+})
+
+router.get('/s', function(req, res){
+  return engine
+      .get('/messages/sms')
+      .then(function(result){
+        res.render('../views/sms_messages', {data: result.data})
       }).catch(function(error){
         console.log('error getting data from TMS: did you set TMS_KEY?', error)
         res.redirect('/')
