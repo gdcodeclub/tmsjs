@@ -40,4 +40,25 @@ router.get('/s', function(req, res){
       })
 })
 
+router.get('/newe', function(req, res){
+        res.render('../views/new_email_message')
+})
+
+router.post('/', function(req, res){
+  var email_message = {
+    subject: req.body['subject'],
+    body: req.body['body'],
+    recipients: [{email:'richard.fong@granicus.com'}]
+  }
+  console.log('here is the data',email_message)
+  return engine
+    .post('/messages/email',email_message)
+    .then(function(result){
+      res.redirect('/m')
+    }).catch(function(error){
+      console.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
+})
+
 module.exports = router
