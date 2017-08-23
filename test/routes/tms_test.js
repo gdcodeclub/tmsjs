@@ -61,4 +61,21 @@ describe('routes', () => {
         done()
       })
   })
+
+  it('should show inbound messages', (done) => {
+    nock(process.env.TMS_URL)
+      .get('/messages/sms')
+      .reply(200, [{body: 'welcome to our text'}, {'body': 'sms rulz'}]);
+
+    agent
+      .get('/s')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('SMS')
+        res.text.should.contain('welcome to our text')
+        res.text.should.contain('sms rulz')
+
+        done()
+      })
+  })
 })

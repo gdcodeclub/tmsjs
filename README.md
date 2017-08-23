@@ -17,17 +17,16 @@ Currently only displays from addresses for an account, but there's more it will 
 
 
 ### Using Docker
-Docker will handle all of the installation, project setup and deploy for you _if_ you have Docker installed on your machine.
-
-You need to have Docker installed to use `docker-compose` -- see [this page](https://docs.docker.com/engine/installation/) for Docker installation instructions.
+Docker will handle all of the installation, project setup and deploy for you _if_ you have Docker installed on your machine -- see [this page](https://docs.docker.com/engine/installation/) for Docker installation instructions.
 
 #### Build
-Every time you add JavaScript libraries, make a change to Docker components, or before the first time your run the app with Docker run `docker-compose build`
+Every time you add JavaScript libraries, make a change to Docker components, or before the first time your run the app with Docker run `docker-compose build`. When in doubt, run it -- running `docker-compose build` more often isn't bad, it just takes time and isn't necessary.
 
 #### Run
 To start the container run `docker-compose up -d` and access the application at http://localhost:8081
 
 ## Tests
+Make sure the application is running and then execute
 ```
 npm run test
 ```
