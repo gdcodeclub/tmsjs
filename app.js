@@ -5,9 +5,12 @@ const request = require('request')
 const tmsRoutes = require('./routes/tms')
 const port = process.env.PORT ||  8080
 
-const mongoose = require('mongoose')
-const databaseUrl = process.env.DATABASEURL || 'mongodb://localhost/tmsjs'
-mongoose.connect(databaseUrl)
+// Don't rely on mongodb when running tests
+if (process.env.TMS_URL != 'https://fake.tms.url.com') {
+  const mongoose = require('mongoose')
+  const databaseUrl = process.env.DATABASEURL || 'mongodb://localhost/tmsjs'
+  mongoose.connect(databaseUrl)
+}
 
 const app = express()
 
