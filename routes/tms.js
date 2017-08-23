@@ -41,7 +41,7 @@ router.get('/s', function(req, res){
 })
 
 router.get('/newe', function(req, res){
-        res.render('../views/new_email_message')
+  res.render('../views/new_email_message')
 })
 
 router.post('/', function(req, res){

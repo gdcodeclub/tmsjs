@@ -78,4 +78,18 @@ describe('routes', () => {
         done()
       })
   })
+
+  it('should show the new email form', (done) => {
+    agent
+      .get('/newe')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('subject')
+        res.text.should.contain('message body')
+        res.text.should.contain('recipients')
+        res.text.should.contain('Send Message')
+
+        done()
+      })
+  })
 })
