@@ -45,14 +45,19 @@ router.get('/newe', function(req, res){
 })
 
 router.post('/', function(req, res){
-  var email_message = {
+  const recipients = []
+  req.body['recipients'].split(',').map((email) => {
+    recipients.push({ email: email })
+  })
+
+  const email_message = {
     subject: req.body['subject'],
     body: req.body['body'],
-    recipients: [{email:'richard.fong@granicus.com'}]
+    recipients: recipients
   }
-  console.log('here is the data',email_message)
+
   return engine
-    .post('/messages/email',email_message)
+    .post('/messages/email', email_message)
     .then(function(result){
       res.redirect('/m')
     }).catch(function(error){
