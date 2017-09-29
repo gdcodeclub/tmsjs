@@ -6,6 +6,7 @@ const chaiHttp = require('chai-http')
 const nock = require('nock')
 const should = chai.should()
 const sinon = require('sinon')
+const Email = require('../../models/email')
 const Recipient = require('../../models/recipient')
 const recipientHelper = require('../../helpers/recipient_helper')
 const axios = require('axios')
@@ -38,15 +39,15 @@ describe('recipient_helper', () => {
       })
   })
 
-  it('should get message ids (getMessageIds)', (done) => {
+  it('should get message ids (getMessageData)', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/email')
-      .reply(200, [{'id': 1}, {'id': 2}])
+      .reply(200, [{'id': 1, 'subject':'subj1'}, {'id': 2, 'subject':'subj2'}])
 
     recipientHelper
-      .getMessageIds(engine)
+      .getMessageData(engine)
       .then(res => {
-        res.should.deep.equal([1,2])
+        res.should.deep.equal([{id: 1, subject: 'subj1'},{id: 2, subject: 'subj2'}])
         nock.isDone().should.be.true
 
         done()
@@ -63,7 +64,7 @@ describe('recipient_helper', () => {
       .get('/messages/email/2/recipients')
       .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}}, {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
 
-    const promises = recipientHelper.getGetRecipientPromises(engine, [1,2])
+    const promises = recipientHelper.getGetRecipientPromises(engine, [{id: 1, subject: 'subj1'},{id: 2, subject: 'subj2'}])
     promises.should.have.lengthOf(2)
 
     done()

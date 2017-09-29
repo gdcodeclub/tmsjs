@@ -1,3 +1,4 @@
+const Email = require('../models/email')
 const Recipient = require('../models/recipient')
 module.exports = {
 
@@ -13,12 +14,12 @@ module.exports = {
   },
 
   /** get message ids from TMS */
-  getMessageIds: function(engine) {
+  getMessageData: function(engine) {
   return engine
     .get('/messages/email')
     .then(function(result){
       return result.data.map((email) => {
-        return email.id
+        return { id: email.id, subject: email.subject }
       })
     })
   },
@@ -29,17 +30,17 @@ module.exports = {
    * * persists all recipients for these messages
    */
   populateRecipients: function(engine) {
-    return module.exports.getMessageIds(engine)
-      .then(function(messageIds) {
-        return module.exports.saveMessageRecipients(engine, messageIds)
+    return module.exports.getMessageData(engine)
+      .then(function(messageData) {
+        return module.exports.saveMessageRecipients(engine, messageData)
       })
   },
 
   /** get recipients from TMS */
-  getGetRecipientPromises: function (engine, messageIds) {
-    return messageIds.map((messageId) => {
+  getGetRecipientPromises: function (engine, messageData) {
+    return messageData.map((message) => {
       return engine
-        .get('/messages/email/' + messageId + '/recipients')
+        .get('/messages/email/' + message.id + '/recipients')
     })
   },
 
@@ -58,8 +59,8 @@ module.exports = {
     })
   },
 
-  saveMessageRecipients: function (engine, messageIds) {
-    const recipientPromises = module.exports.getGetRecipientPromises(engine, messageIds)
+  saveMessageRecipients: function (engine, messageData) {
+    const recipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
     return Promise.all(recipientPromises)
       .then(result => {
         return result
