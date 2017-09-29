@@ -78,4 +78,13 @@ describe('recipient_helper', () => {
 
     done()
   })
+
+  it('should get save messages (getSaveMessagePromises)', (done) => {
+    const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'}, {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
+
+    const promises = recipientHelper.getSaveMessagePromises(messages)
+    promises.should.have.lengthOf(2)
+
+    done()
+  })
 })

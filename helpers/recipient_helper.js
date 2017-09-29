@@ -27,10 +27,15 @@ module.exports = {
   /**
    * externally called function
    * * gets all messages for an account
+   * * persists all messages
    * * persists all recipients for these messages
    */
   populateRecipients: function(engine) {
     return module.exports.getMessageData(engine)
+      .then(function(messageData) {
+        module.exports.saveMessages(engine, messageData)
+        return messageData
+      })
       .then(function(messageData) {
         return module.exports.saveMessageRecipients(engine, messageData)
       })
@@ -44,6 +49,22 @@ module.exports = {
     })
   },
 
+  /** persist messages */
+  getSaveMessagePromises: function (messages) {
+    return [].concat(...messages).map((message) => {
+      const rec = new Email({
+        messageId: message.id,
+        subject: message.subject,
+        date: message.created_at
+      })
+      return rec.save(function(err) {
+        if (err) {
+          console.log('ERROR SAVING MESSAGE' + message.id, err)
+        }
+      })
+    })
+  },
+
   /** persist recipients */
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
@@ -53,7 +74,7 @@ module.exports = {
       })
       return rec.save(function(err) {
         if (err) {
-          console.log('ERROR SAVING', err)
+          console.log('ERROR SAVING RECIPIENT' + recipient.email, err)
         }
       })
     })
@@ -73,6 +94,14 @@ module.exports = {
       .then(function(rdata) {
         const savePromises = module.exports.getSaveRecipientPromises(rdata)
         return module.exports.executePromises(savePromises)
+      })
+  },
+
+  saveMessages: function (engine, messageData) {
+    const messagePromises = module.exports.getSaveMessagePromises(messageData)
+    return Promise.all(messagePromises)
+      .then(result => {
+        return result
       })
   }
 
