@@ -82,10 +82,7 @@ module.exports = {
 
   saveMessageRecipients: function (engine, messageData) {
     const getRecipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
-    return Promise.all(getRecipientPromises)
-      .then(result => {
-        return result
-      })
+    return module.exports.executePromises(getRecipientPromises)
       .then(function(recipients) {
         return recipients.map((rdata) => {
           return rdata.data
