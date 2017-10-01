@@ -43,3 +43,10 @@ npm run test
 ```
 docker exec -it mongodb /bin/bash
 ```
+
+## Working with Mongo
+```
+docker exec -it mongodb /bin/bash
+mongo
+use tmsjs
+```

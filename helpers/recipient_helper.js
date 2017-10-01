@@ -33,7 +33,7 @@ module.exports = {
   populateRecipients: function(engine) {
     return module.exports.getMessageData(engine)
       .then(function(messageData) {
-        module.exports.saveMessages(engine, messageData)
+        module.exports.saveMessages(messageData)
         return messageData
       })
       .then(function(messageData) {
@@ -81,8 +81,8 @@ module.exports = {
   },
 
   saveMessageRecipients: function (engine, messageData) {
-    const recipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
-    return Promise.all(recipientPromises)
+    const getRecipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
+    return Promise.all(getRecipientPromises)
       .then(result => {
         return result
       })
@@ -97,12 +97,9 @@ module.exports = {
       })
   },
 
-  saveMessages: function (engine, messageData) {
+  saveMessages: function (messageData) {
     const messagePromises = module.exports.getSaveMessagePromises(messageData)
-    return Promise.all(messagePromises)
-      .then(result => {
-        return result
-      })
+    return module.exports.executePromises(messagePromises)
   }
 
 }

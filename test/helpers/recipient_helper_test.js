@@ -13,6 +13,8 @@ const axios = require('axios')
 const engine = axios.create({
   baseURL: process.env.TMS_URL,
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
+const mongoose = require('mongoose')
+var mockEmail // mocking
 
 chai.use(chaiHttp);
 
@@ -86,5 +88,29 @@ describe('recipient_helper', () => {
     promises.should.have.lengthOf(2)
 
     done()
+  })
+
+  describe('mocking Email model', () => {
+    beforeEach(function() {
+      mockEmail = sinon.mock(Email.prototype)
+    });
+
+    afterEach(function() {
+      mockEmail.restore()
+    })
+
+    it('should save messages (saveMessages)', () => {
+      mockEmail
+        .expects('save')
+        .resolves(Promise.resolve('saved'))
+        .exactly(2);
+
+      const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'}, {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
+      const promises = recipientHelper.saveMessages(messages)
+      return promises
+        .then((res) => {
+          mockEmail.verify()
+        })
+    })
   })
 })
