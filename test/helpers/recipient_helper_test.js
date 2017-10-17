@@ -84,27 +84,25 @@ describe('recipient_helper', () => {
     done()
   })
 
-  describe('mocking Email model', () => {
-    beforeEach(function() {
-      mockEmail = sinon.mock(Email.prototype)
-    });
 
-    afterEach(function() {
-      mockEmail.restore()
+  it ('should save messages (saveMessages)', () => {
+    const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'}, {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
+    const promises = recipientHelper.saveMessages(messages)
+    return promises
+      .then((res) => {
+        res.should.have.lengthOf(2)
+      })
+  })
+
+  it.only ('should persist record', () => {
+    const rec = new Recipient({
+      email: 'blah'
     })
 
-    it('should save messages (saveMessages)', () => {
-      mockEmail
-        .expects('save')
-        .resolves(Promise.resolve('saved'))
-        .exactly(2);
-
-      const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'}, {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
-      const promises = recipientHelper.saveMessages(messages)
-      return promises
-        .then((res) => {
-          mockEmail.verify()
-        })
-    })
+    return recipientHelper
+      .persist(rec, ['recipient', 'eric'])
+      .then((res) => {
+        res.email.should.equal('blah')
+      })
   })
 })

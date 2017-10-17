@@ -97,7 +97,7 @@ module.exports = {
   persist: function(rec, logData) {
     return rec.save(function(err) {
       if (err) {
-        console.log('zzERROR SAVING ' + logData.join(' '), err)
+        console.log('ERROR SAVING ' + logData.join(' '), err)
       }
     })
   }
