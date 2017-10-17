@@ -9,7 +9,7 @@ services:
     environment:
       - TMS_URL
       - TMS_KEY
-      - DATABASEURL='mongodb://mongodb/tmsjs'
+      - DATABASEURL=mongodb://mongodb/tmsjs
     links:
       - mongodb
     depends_on:

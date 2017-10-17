@@ -4,6 +4,7 @@ const axios = require('axios')
 const engine = axios.create({
   baseURL: process.env.TMS_URL,
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
+const recipientHelper = require('../helpers/recipient_helper')
 
 console.log('TMS baseURL set to ' + process.env.TMS_URL)
 
@@ -42,6 +43,17 @@ router.get('/s', function(req, res){
 
 router.get('/newe', function(req, res){
   res.render('../views/new_email_message')
+})
+
+router.get('/slurpe', function(req, res){
+  return recipientHelper.populateRecipients(engine)
+    .then(function(sr) {
+      res.redirect('/')
+    })
+    .catch(function(error){
+      console.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
 })
 
 router.post('/', function(req, res){
