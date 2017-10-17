@@ -57,11 +57,7 @@ module.exports = {
         subject: message.subject,
         date: message.created_at
       })
-      return rec.save(function(err) {
-        if (err) {
-          console.log('ERROR SAVING MESSAGE' + message.id, err)
-        }
-      })
+      return module.exports.persist(rec, ['MESSAGE', message.id])
     })
   },
 
@@ -72,11 +68,7 @@ module.exports = {
         email: recipient.email,
         messageId: recipient._links.email_message.split('/').reverse()[0]
       })
-      return rec.save(function(err) {
-        if (err) {
-          console.log('ERROR SAVING RECIPIENT' + recipient.email, err)
-        }
-      })
+      return module.exports.persist(rec, ['RECIPIENT', recipient.email])
     })
   },
 
@@ -100,6 +92,14 @@ module.exports = {
   saveMessages: function (messageData) {
     const messagePromises = module.exports.getSaveMessagePromises(messageData)
     return module.exports.executePromises(messagePromises)
+  },
+
+  persist: function(rec, logData) {
+    return rec.save(function(err) {
+      if (err) {
+        console.log('zzERROR SAVING ' + logData.join(' '), err)
+      }
+    })
   }
 
 }
