@@ -38,6 +38,11 @@ Make sure the application is running and then execute
 npm run test
 ```
 
+To run with code coverage
+```
+npm run itest
+```
+
 ## Working with Docker
 ### ssh to a box
 ```

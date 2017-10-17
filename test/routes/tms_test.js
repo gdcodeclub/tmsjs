@@ -32,6 +32,22 @@ describe('routes', () => {
       })
   })
 
+  it('should handle error during show from addresses', (done) => {
+    nock(process.env.TMS_URL)
+      .get('/from_addresses')
+      .replyWithError('error')
+
+    agent
+      .get('/fa')
+      .end((err, res) => {
+        res.should.have.status(302)
+        res.should.redirectTo('/')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
   it('should show email messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/email')
@@ -44,6 +60,22 @@ describe('routes', () => {
         res.text.should.contain('Subject Line')
         res.text.should.contain('first email')
         res.text.should.contain('second email')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
+  it('should handle error during show email messages', (done) => {
+    nock(process.env.TMS_URL)
+      .get('/messages/email')
+      .replyWithError('error')
+
+    agent
+      .get('/m')
+      .end((err, res) => {
+        res.should.have.status(302)
+        res.should.redirectTo('/')
 
         nock.isDone().should.be.true
         done()
@@ -68,18 +100,16 @@ describe('routes', () => {
       })
   })
 
-  it('should show inbound messages', (done) => {
+  it('should handle error during show sms messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/sms')
-      .reply(200, [{body: 'welcome to our text'}, {'body': 'sms rulz'}]);
+      .replyWithError('error')
 
     agent
       .get('/s')
       .end((err, res) => {
-        res.should.have.status(200)
-        res.text.should.contain('SMS')
-        res.text.should.contain('welcome to our text')
-        res.text.should.contain('sms rulz')
+        res.should.have.status(302)
+        res.should.redirectTo('/')
 
         nock.isDone().should.be.true
         done()
@@ -109,6 +139,7 @@ describe('routes', () => {
     afterEach(function() {
       stub.restore()
     })
+
     it('should populate local store with email recipient data', (done) => {
       const first = nock(process.env.TMS_URL)
         .get('/messages/email')
@@ -130,6 +161,25 @@ describe('routes', () => {
           stub.getCall(0).args[0].should.have.lengthOf(2)
           stub.getCall(1).args[0].should.have.lengthOf(4)
           stub.callCount.should.eq(2)
+
+          done()
+        }).catch(function(err) {
+          return done(err)
+        })
+    })
+
+    it('should handle error', (done) => {
+      const first = nock(process.env.TMS_URL)
+        .get('/messages/email')
+        .replyWithError('error')
+
+      agent
+        .get('/slurpe')
+        .then(res => {
+          res.should.have.status(302)
+          res.should.redirectTo('/')
+          first.isDone().should.be.true
+
           done()
         }).catch(function(err) {
           return done(err)
@@ -168,7 +218,30 @@ describe('routes', () => {
         res.should.have.status(302)
         nock.isDone().should.be.true
 
-        done()
+        done(err)
+      })
+  })
+
+  it('should handle error for post email message', (done) => {
+    const message = {
+      subject: 'Hello!',
+      body: 'Hi!',
+      recipients: 'first@example.com,second@example.com'
+    }
+
+    nock(process.env.TMS_URL)
+      .post('/messages/email')
+      .replyWithError('error')
+
+    agent
+      .post('/')
+      .type('form')
+      .send(message)
+      .end((err, res) => {
+        res.should.have.status(302)
+        res.should.redirectTo('/')
+
+        done(err)
       })
   })
 })

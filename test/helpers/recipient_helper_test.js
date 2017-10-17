@@ -3,6 +3,7 @@ process.env.TMS_KEY = 'hU5Hn0w'
 
 const chai = require('chai')
 const chaiHttp = require('chai-http')
+var chaiAsPromised = require("chai-as-promised");
 const nock = require('nock')
 const should = chai.should()
 const sinon = require('sinon')
@@ -17,9 +18,10 @@ const mongoose = require('mongoose')
 var mockEmail // mocking
 
 chai.use(chaiHttp);
+chai.use(chaiAsPromised);
 
 describe('recipient_helper', () => {
-  it ('should execute promises (executePromises)', (done) => {
+  it ('should execute promises (executePromises)', () => {
     const p1 = new Promise(function(resolve, reject) {
       resolve("done1")
     })
@@ -30,32 +32,18 @@ describe('recipient_helper', () => {
       resolve("done3")
     })
 
-    recipientHelper
-      .executePromises([p1, p2, p3])
-      .then(res => {
-        res.should.deep.equal(['done1', 'done2', 'done3'])
-
-        done()
-      }).catch(err => {
-        done(err)
-      })
+    return recipientHelper.executePromises([p1, p2, p3])
+      .should.become(['done1', 'done2', 'done3'])
   })
 
-  it('should get message ids (getMessageData)', (done) => {
+  it('should get message ids (getMessageData)', () => {
     nock(process.env.TMS_URL)
       .get('/messages/email')
       .reply(200, [{'id': 1, 'subject':'subj1'}, {'id': 2, 'subject':'subj2'}])
 
-    recipientHelper
+    return recipientHelper
       .getMessageData(engine)
-      .then(res => {
-        res.should.deep.equal([{id: 1, subject: 'subj1'},{id: 2, subject: 'subj2'}])
-        nock.isDone().should.be.true
-
-        done()
-      }).catch(err => {
-        done(err)
-      })
+      .should.become([{id: 1, subject: 'subj1'},{id: 2, subject: 'subj2'}])
   })
 
   it('should get recipients with message id (getGetRecipientPromises)', (done) => {
@@ -86,6 +74,12 @@ describe('recipient_helper', () => {
 
     const promises = recipientHelper.getSaveMessagePromises(messages)
     promises.should.have.lengthOf(2)
+
+    done()
+  })
+
+  it('should handle get save messages error (getSaveMessagePromises)', (done) => {
+    should.throw(() => recipientHelper.getSaveMessagePromises(nil), ReferenceError)
 
     done()
   })

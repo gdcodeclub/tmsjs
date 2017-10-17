@@ -5,6 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "node_modules/mocha/bin/mocha test/*",
+    "itest": "istanbul cover node_modules/mocha/bin/_mocha test/*",
     "start": "node app.js"
   },
   "author": "",
@@ -24,8 +25,10 @@
   },
   "devDependencies": {
     "chai": "^4.0.2",
+    "chai-as-promised": "^7.1.1",
     "chai-http": "^3.0.0",
     "http": "0.0.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.4.2",
     "nock": "^9.0.13",
     "should": "^11.2.1",
