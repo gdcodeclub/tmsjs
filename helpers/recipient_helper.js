@@ -97,9 +97,19 @@ module.exports = {
   persist: function(rec, logData) {
     return rec.save(function(err) {
       if (err) {
-        console.log('ERROR SAVING ' + logData.join(' '), err)
+        module.exports.log('ERROR SAVING ' + logData.join(' '), err)
       }
     })
+  },
+
+  // when running tests don't fill console with expected errors
+  // for debugging you may want to modify this method temporarily to see full error
+  log: function(message, error) {
+    if (process.env.TMS_URL == 'https://fake.tms.url.com') {
+      console.log('error would have been logged -- see recipient_helper.log')
+      return true
+    }
+    console.log(message, error)
   }
 
 }

@@ -14,7 +14,7 @@ router.get('/fa', function(req, res){
       .then(function(result){
         res.render('../views/account_info', {data: result.data})
       }).catch(function(error){
-        console.log('error getting data from TMS: did you set TMS_KEY?', error)
+        recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
         res.redirect('/')
       })
 })
@@ -25,7 +25,7 @@ router.get('/m', function(req, res){
       .then(function(result){
         res.render('../views/email_messages', {data: result.data})
       }).catch(function(error){
-        console.log('error getting data from TMS: did you set TMS_KEY?', error)
+        recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
         res.redirect('/')
       })
 })
@@ -36,7 +36,7 @@ router.get('/s', function(req, res){
       .then(function(result){
         res.render('../views/sms_messages', {data: result.data})
       }).catch(function(error){
-        console.log('error getting data from TMS: did you set TMS_KEY?', error)
+        recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
         res.redirect('/')
       })
 })
@@ -51,7 +51,7 @@ router.get('/slurpe', function(req, res){
       res.redirect('/')
     })
     .catch(function(error){
-      console.log('error getting data from TMS: did you set TMS_KEY?', error)
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
       res.redirect('/')
     })
 })
@@ -73,7 +73,7 @@ router.post('/', function(req, res){
     .then(function(result){
       res.redirect('/m')
     }).catch(function(error){
-      console.log('error getting data from TMS: did you set TMS_KEY?', error)
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
       res.redirect('/')
     })
 })
