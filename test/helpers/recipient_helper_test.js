@@ -94,7 +94,7 @@ describe('recipient_helper', () => {
       })
   })
 
-  it.only ('should persist record', () => {
+  it ('should persist record', () => {
     const rec = new Recipient({
       email: 'blah'
     })

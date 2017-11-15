@@ -140,7 +140,7 @@ describe('routes', () => {
       stub.restore()
     })
 
-    it('should populate local store with email recipient data', (done) => {
+    it ('should populate local store with email recipient data', (done) => {
       const first = nock(process.env.TMS_URL)
         .get('/messages/email')
         .reply(200, [{'id': 1, 'subject': 'first email'}, {'id': 2, 'subject': 'second email'}])
