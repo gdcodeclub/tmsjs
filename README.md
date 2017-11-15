@@ -54,10 +54,21 @@ docker exec -it mongodb /bin/bash
 ```
 
 ## Working with Mongo
+### log into docker mongodb and switch to tmsjs schema
 ```
 docker exec -it mongodb /bin/bash
 mongo
 use tmsjs
+```
+
+### see stuff
+```
 show collections
 db.emails.find()
+```
+
+### remove stuff
+```
+db.emails.remove({})
+db.recipients.remove({})
 ```
