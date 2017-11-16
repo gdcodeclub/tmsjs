@@ -61,12 +61,22 @@ module.exports = {
     })
   },
 
+  /** read messages from database */
+  readMessages: function(engine) {
+    return Email.find(function(err, messages){
+      if (err) {
+        module.exports.log('error retrieving messages from database', err)
+      }
+      return messages
+    })
+  },
+
   /** persist recipients */
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
       const rec = new Recipient({
         email: recipient.email,
-        messageId: recipient._links.email_message.split('/').reverse()[0]
+        messageId: recipient._links.email_message.split('/')[2]
       })
       return module.exports.persist(rec, ['RECIPIENT', recipient.email])
     })

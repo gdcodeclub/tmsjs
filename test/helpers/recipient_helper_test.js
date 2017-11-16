@@ -15,6 +15,7 @@ const engine = axios.create({
   baseURL: process.env.TMS_URL,
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
 const mongoose = require('mongoose')
+
 var mockEmail // mocking
 
 chai.use(chaiHttp);
@@ -103,6 +104,88 @@ describe('recipient_helper', () => {
       .persist(rec, ['recipient', 'eric'])
       .then((res) => {
         res.email.should.equal('blah')
+      })
+  })
+
+  it ('should read records from database (readMessages)', () => {
+    const date = new Date().toString()
+    const rec = new Email({
+      subject: 'A fine mailing',
+      date: date,
+      messageId: 1001
+    })
+    const savePromise = rec.save(err => {
+      if (err) {
+        console.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    return savePromise
+      .then(res => {
+        res.date.should.equal(rec.date)
+      })
+      .then(() => {
+        return recipientHelper.readMessages(engine)
+          .then(messages => {
+            const message = messages[messages.length - 1]
+            message.date.should.equal(rec.date)
+            message.subject.should.equal(rec.subject)
+            message.messageId.should.equal(rec.messageId)
+          })
+      })
+  })
+
+  // tests more than it should, but helpful during development
+  it.only ('should populate messages and recipients (populateRecipients)', () => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/email')
+      .reply(200, [{'id': 1, 'subject':'subj1'}, {'id': 2, 'subject':'subj2'}])
+    const second = nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients')
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}}, {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+    const third = nock(process.env.TMS_URL)
+      .get('/messages/email/2/recipients')
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}}, {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+    const promise = recipientHelper.populateRecipients(engine)
+
+    return promise
+      .then(recipients => {
+        recipients.length.should.equal(4)
+        recipients[0].messageId.should.equal('1')
+
+        first.isDone().should.be.true
+        second.isDone().should.be.true
+        third.isDone().should.be.true
+      })
+      .then(() => {
+        return Email.where('messageId', '1').findOne(function(err, message) {
+          message.subject.should.eq('subj1')
+        })
+      })
+      .then(() => {
+        return Email.where('messageId', '2').findOne(function(err, message) {
+          message.subject.should.eq('subj2')
+        })
+      })
+      .then(() => {
+        return Recipient.where('email', 'r.fong@sink.granicus.com').findOne(function(err, message) {
+          message.messageId.should.eq('1')
+        })
+      })
+      .then(() => {
+        return Recipient.where('email', 'e.ebbesen@sink.granicus.com').findOne(function(err, message) {
+          message.messageId.should.eq('1')
+        })
+      })
+      .then(() => {
+        return Recipient.where('email', 'r.fong2@sink.granicus.com').findOne(function(err, message) {
+          message.messageId.should.eq('2')
+        })
+      })
+      .then(() => {
+        return Recipient.where('email', 'e.ebbesen2@sink.granicus.com').findOne(function(err, message) {
+          message.messageId.should.eq('2')
+        })
       })
   })
 })
