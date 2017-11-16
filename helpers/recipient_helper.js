@@ -19,7 +19,7 @@ module.exports = {
     .get('/messages/email')
     .then(function(result){
       return result.data.map((email) => {
-        return { id: email.id, subject: email.subject }
+        return { messageId: email.id, subject: email.subject, date: email.created_at }
       })
     })
   },
@@ -45,7 +45,7 @@ module.exports = {
   getGetRecipientPromises: function (engine, messageData) {
     return messageData.map((message) => {
       return engine
-        .get('/messages/email/' + message.id + '/recipients')
+        .get('/messages/email/' + message.messageId + '/recipients')
     })
   },
 
@@ -57,7 +57,7 @@ module.exports = {
         subject: message.subject,
         date: message.created_at
       })
-      return module.exports.persist(rec, ['MESSAGE', message.id])
+      return module.exports.persist(rec, ['MESSAGE', message.messageId])
     })
   },
 
@@ -112,8 +112,10 @@ module.exports = {
     })
   },
 
-  // when running tests don't fill console with expected errors
-  // for debugging you may want to modify this method temporarily to see full error
+  /**
+   * when running tests don't fill console with expected errors
+   * for debugging you may want to modify this method temporarily to see full error
+   */
   log: function(message, error) {
     if (process.env.TMS_URL == 'https://fake.tms.url.com') {
       console.log('error would have been logged -- see recipient_helper.log')

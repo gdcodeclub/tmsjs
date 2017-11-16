@@ -16,12 +16,10 @@ const engine = axios.create({
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
 const mongoose = require('mongoose')
 
-var mockEmail // mocking
-
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 
-describe('recipient_helper', () => {
+describe ('recipient_helper', () => {
   it ('should execute promises (executePromises)', () => {
     const p1 = new Promise(function(resolve, reject) {
       resolve("done1")
@@ -37,32 +35,46 @@ describe('recipient_helper', () => {
       .should.become(['done1', 'done2', 'done3'])
   })
 
-  it('should get message ids (getMessageData)', () => {
+  it ('should get message ids (getMessageData)', () => {
     nock(process.env.TMS_URL)
       .get('/messages/email')
-      .reply(200, [{'id': 1, 'subject':'subj1'}, {'id': 2, 'subject':'subj2'}])
+      .reply(200, [{'id': 1, 'subject':'subj1', 'created_at':'2017-01-30T17:45:27Z'},
+                   {'id': 2, 'subject':'subj2', 'created_at':'2017-02-30T17:45:27Z'}])
 
     return recipientHelper
       .getMessageData(engine)
-      .should.become([{id: 1, subject: 'subj1'},{id: 2, subject: 'subj2'}])
+      .should.become([{messageId: 1, subject: 'subj1', date: '2017-01-30T17:45:27Z'},
+                      {messageId: 2, subject: 'subj2', date: '2017-02-30T17:45:27Z'}])
   })
 
-  it('should get recipients with message id (getGetRecipientPromises)', (done) => {
+  it ('should get recipients with message id (getGetRecipientPromises)', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}}, {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}}, {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
 
-    const promises = recipientHelper.getGetRecipientPromises(engine, [{id: 1, subject: 'subj1'},{id: 2, subject: 'subj2'}])
+    const promises = recipientHelper.getGetRecipientPromises(engine, [{messageId: 1, subject: 'subj1', date: '2017-01-30T17:45:27Z'},
+                                                                      {messageId: 2, subject: 'subj2', date: '2017-02-30T17:45:27Z'}])
+
     promises.should.have.lengthOf(2)
+    Promise.all(promises)
+      .then(res => {
+        first.isDone().should.be.true
+        second.isDone().should.be.true
 
-    done()
+        done()
+      }).catch(function(err) {
+        return done(err)
+      })
   })
 
-  it('should get save recipients (getSaveRecipientPromises)', (done) => {
-    const recipients = [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}}, {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}]
+  it ('should get save recipients (getSaveRecipientPromises)', (done) => {
+    const recipients = [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
+                        {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}]
 
     const promises = recipientHelper.getSaveRecipientPromises(recipients)
     promises.should.have.lengthOf(2)
@@ -70,8 +82,9 @@ describe('recipient_helper', () => {
     done()
   })
 
-  it('should get save messages (getSaveMessagePromises)', (done) => {
-    const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'}, {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
+  it ('should get save messages (getSaveMessagePromises)', (done) => {
+    const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'},
+                      {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
 
     const promises = recipientHelper.getSaveMessagePromises(messages)
     promises.should.have.lengthOf(2)
@@ -87,7 +100,8 @@ describe('recipient_helper', () => {
 
 
   it ('should save messages (saveMessages)', () => {
-    const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'}, {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
+    const messages = [{'subject':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'},
+                      {'subject':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
     const promises = recipientHelper.saveMessages(messages)
     return promises
       .then((res) => {
@@ -135,17 +149,20 @@ describe('recipient_helper', () => {
       })
   })
 
-  // tests more than it should, but helpful during development
-  it.only ('should populate messages and recipients (populateRecipients)', () => {
+  // test unwieldy, but helpful during development
+  it ('should populate messages and recipients (populateRecipients)', () => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email')
-      .reply(200, [{'id': 1, 'subject':'subj1'}, {'id': 2, 'subject':'subj2'}])
+      .reply(200, [{'id': 1, 'subject':'subj1', 'created_at':'2017-01-30T17:45:27Z'},
+                   {'id': 2, 'subject':'subj2', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}}, {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}}, {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
     const promise = recipientHelper.populateRecipients(engine)
 
     return promise
