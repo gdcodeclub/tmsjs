@@ -78,4 +78,13 @@ router.post('/', function(req, res){
     })
 })
 
+router.get('/saved_messages', function(req, res){
+  recipientHelper.readMessages()
+    .then(function(messages) {
+      res.render('../views/email_messages', {data: messages})
+    })
+})
+
+
+
 module.exports = router

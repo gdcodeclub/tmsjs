@@ -244,4 +244,19 @@ describe('routes', () => {
         done(err)
       })
   })
+
+  it('should show saved email messages', (done) => {
+    // stub database call here....
+    agent
+      .get('/saved_messages')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Subject Line')
+        res.text.should.contain('first email')
+        res.text.should.contain('second email')
+
+        done()
+      })
+  })
+
 })

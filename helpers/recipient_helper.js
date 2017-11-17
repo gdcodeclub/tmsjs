@@ -13,7 +13,12 @@ module.exports = {
       })
   },
 
-  /** get message ids from TMS */
+  /**
+   * get messages from TMS
+   * returns message objects translated to TMSJS
+   * for example, the TMS API exposes an attribute called "id"
+   * that TMSJS refers to as "messageId"
+   */
   getMessageData: function(engine) {
   return engine
     .get('/messages/email')
@@ -33,8 +38,7 @@ module.exports = {
   populateRecipients: function(engine) {
     return module.exports.getMessageData(engine)
       .then(function(messageData) {
-        module.exports.saveMessages(messageData)
-        return messageData
+        return module.exports.saveMessages(messageData)
       })
       .then(function(messageData) {
         return module.exports.saveMessageRecipients(engine, messageData)
@@ -53,11 +57,11 @@ module.exports = {
   getSaveMessagePromises: function (messages) {
     return [].concat(...messages).map((message) => {
       const rec = new Email({
-        messageId: message.id,
+        messageId: message.messageId,
         subject: message.subject,
-        date: message.created_at
+        date: message.date
       })
-      return module.exports.persist(rec, ['MESSAGE', message.messageId])
+      return module.exports.persist(rec, ['MESSAGE', rec.messageId])
     })
   },
 
