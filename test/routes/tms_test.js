@@ -9,7 +9,7 @@ const nock = require('nock')
 const should = chai.should()
 const sinon = require('sinon')
 const recipientHelper = require('../../helpers/recipient_helper')
-var stub
+
 chai.use(chaiHttp);
 
 describe('routes', () => {
@@ -131,60 +131,50 @@ describe('routes', () => {
       })
   })
 
-  describe('mocking executePromises', () => {
-    beforeEach(function() {
-      stub = sinon.stub(recipientHelper, 'executePromises')
-    });
+  it ('should populate local store with email recipient data', (done) => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/email')
+      .reply(200, [{'id': 1, 'subject': 'first email', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
+    const second = nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients')
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+    const third = nock(process.env.TMS_URL)
+      .get('/messages/email/2/recipients')
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
 
-    afterEach(function() {
-      stub.restore()
-    })
+     agent
+      .get('/slurpe')
+      .then(res => {
+        res.should.have.status(302)
+        first.isDone().should.be.true
+        second.isDone().should.be.true
+        third.isDone().should.be.true
 
-    it('should populate local store with email recipient data', (done) => {
-      const first = nock(process.env.TMS_URL)
-        .get('/messages/email')
-        .reply(200, [{'id': 1, 'subject': 'first email'}, {'id': 2, 'subject': 'second email'}])
-      const second = nock(process.env.TMS_URL)
-        .get('/messages/email/1/recipients')
-        .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}}, {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
-      const third = nock(process.env.TMS_URL)
-        .get('/messages/email/2/recipients')
-        .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}}, {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+        done()
+      }).catch(function(err) {
+        return done(err)
+      })
+  })
 
-      agent
-        .get('/slurpe')
-        .then(res => {
-          res.should.have.status(302)
-          first.isDone().should.be.true
-          second.isDone().should.be.true
-          third.isDone().should.be.true
-          stub.getCall(0).args[0].should.have.lengthOf(2)
-          stub.getCall(1).args[0].should.have.lengthOf(4)
-          stub.callCount.should.eq(2)
+  it('should handle error', (done) => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/email')
+      .replyWithError('error')
 
-          done()
-        }).catch(function(err) {
-          return done(err)
-        })
-    })
+    agent
+      .get('/slurpe')
+      .then(res => {
+        res.should.have.status(302)
+        res.should.redirectTo('/')
+        first.isDone().should.be.true
 
-    it('should handle error', (done) => {
-      const first = nock(process.env.TMS_URL)
-        .get('/messages/email')
-        .replyWithError('error')
-
-      agent
-        .get('/slurpe')
-        .then(res => {
-          res.should.have.status(302)
-          res.should.redirectTo('/')
-          first.isDone().should.be.true
-
-          done()
-        }).catch(function(err) {
-          return done(err)
-        })
-    })
+        done()
+      }).catch(function(err) {
+        return done(err)
+      })
   })
 
   it('should post email message', (done) => {
@@ -242,6 +232,20 @@ describe('routes', () => {
         res.should.redirectTo('/')
 
         done(err)
+      })
+  })
+
+  it('should show saved email messages', (done) => {
+    // stub database call here....
+    agent
+      .get('/saved_messages')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Subject Line')
+        res.text.should.contain('first email')
+        res.text.should.contain('second email')
+
+        done()
       })
   })
 })

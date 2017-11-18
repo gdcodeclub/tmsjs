@@ -15,6 +15,10 @@ Currently only displays from addresses for an account, but there's more it will 
 1. `node app.js` or `npm start`
 1. http://localhost:8080/fa
 
+#### Note on mongodb
+You need mongodb running for all tests to pass. To start just the database run
+
+`docker-compose up -d mongodb`
 
 ### Using Docker
 Docker will handle all of the installation, project setup and deploy for you _if_ you have Docker installed on your machine -- see [this page](https://docs.docker.com/engine/installation/) for Docker installation instructions.
@@ -50,8 +54,21 @@ docker exec -it mongodb /bin/bash
 ```
 
 ## Working with Mongo
+### log into docker mongodb and switch to tmsjs schema
 ```
 docker exec -it mongodb /bin/bash
 mongo
 use tmsjs
+```
+
+### see stuff
+```
+show collections
+db.emails.find()
+```
+
+### remove stuff
+```
+db.emails.remove({})
+db.recipients.remove({})
 ```

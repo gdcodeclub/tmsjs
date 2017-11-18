@@ -13,13 +13,18 @@ module.exports = {
       })
   },
 
-  /** get message ids from TMS */
+  /**
+   * get messages from TMS
+   * returns message objects translated to TMSJS
+   * for example, the TMS API exposes an attribute called "id"
+   * that TMSJS refers to as "messageId"
+   */
   getMessageData: function(engine) {
   return engine
     .get('/messages/email')
     .then(function(result){
       return result.data.map((email) => {
-        return { id: email.id, subject: email.subject }
+        return { messageId: email.id, subject: email.subject, date: email.created_at }
       })
     })
   },
@@ -33,8 +38,7 @@ module.exports = {
   populateRecipients: function(engine) {
     return module.exports.getMessageData(engine)
       .then(function(messageData) {
-        module.exports.saveMessages(messageData)
-        return messageData
+        return module.exports.saveMessages(messageData)
       })
       .then(function(messageData) {
         return module.exports.saveMessageRecipients(engine, messageData)
@@ -45,7 +49,7 @@ module.exports = {
   getGetRecipientPromises: function (engine, messageData) {
     return messageData.map((message) => {
       return engine
-        .get('/messages/email/' + message.id + '/recipients')
+        .get('/messages/email/' + message.messageId + '/recipients')
     })
   },
 
@@ -53,15 +57,21 @@ module.exports = {
   getSaveMessagePromises: function (messages) {
     return [].concat(...messages).map((message) => {
       const rec = new Email({
-        messageId: message.id,
+        messageId: message.messageId,
         subject: message.subject,
-        date: message.created_at
+        date: message.date
       })
-      return rec.save(function(err) {
-        if (err) {
-          console.log('ERROR SAVING MESSAGE' + message.id, err)
-        }
-      })
+      return module.exports.persist(rec, ['MESSAGE', rec.messageId])
+    })
+  },
+
+  /** read messages from database */
+  readMessages: function(engine) {
+    return Email.find(function(err, messages){
+      if (err) {
+        module.exports.log('error retrieving messages from database', err)
+      }
+      return messages
     })
   },
 
@@ -70,13 +80,9 @@ module.exports = {
     return [].concat(...recipients).map((recipient) => {
       const rec = new Recipient({
         email: recipient.email,
-        messageId: recipient._links.email_message.split('/').reverse()[0]
+        messageId: recipient._links.email_message.split('/')[2]
       })
-      return rec.save(function(err) {
-        if (err) {
-          console.log('ERROR SAVING RECIPIENT' + recipient.email, err)
-        }
-      })
+      return module.exports.persist(rec, ['RECIPIENT', recipient.email])
     })
   },
 
@@ -100,6 +106,26 @@ module.exports = {
   saveMessages: function (messageData) {
     const messagePromises = module.exports.getSaveMessagePromises(messageData)
     return module.exports.executePromises(messagePromises)
+  },
+
+  persist: function(rec, logData) {
+    return rec.save(function(err) {
+      if (err) {
+        module.exports.log('ERROR SAVING ' + logData.join(' '), err)
+      }
+    })
+  },
+
+  /**
+   * when running tests don't fill console with expected errors
+   * for debugging you may want to modify this method temporarily to see full error
+   */
+  log: function(message, error) {
+    if (process.env.TMS_URL == 'https://fake.tms.url.com') {
+      console.log('error would have been logged -- see recipient_helper.log')
+      return true
+    }
+    console.log(message, error)
   }
 
 }
