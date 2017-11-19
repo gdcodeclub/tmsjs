@@ -38,7 +38,8 @@ module.exports = {
   populateRecipients: function(engine) {
     return module.exports.getMessageData(engine)
       .then(function(messageData) {
-        return module.exports.saveMessages(messageData)
+        const res = module.exports.saveMessages(messageData)
+        return messageData
       })
       .then(function(messageData) {
         return module.exports.saveMessageRecipients(engine, messageData)
@@ -53,15 +54,23 @@ module.exports = {
     })
   },
 
-  /** persist messages */
+  /**
+   * persist messages
+   * if record exists, update it; if not, insert it
+   */
   getSaveMessagePromises: function (messages) {
     return [].concat(...messages).map((message) => {
-      const rec = new Email({
-        messageId: message.messageId,
+      const query = {messageId: message.messageId}
+      const data = Object.assign({}, query, {
         subject: message.subject,
-        date: message.date
+        date: message.created_at
       })
-      return module.exports.persist(rec, ['MESSAGE', rec.messageId])
+
+      return Email.update(query, data, {upsert: true}, function(err) {
+        if (err) {
+          module.exports.log('ERROR SAVING MESSAGE ' + messageId, err)
+        }
+      })
     })
   },
 
@@ -75,14 +84,21 @@ module.exports = {
     })
   },
 
-  /** persist recipients */
+  /**
+   * persist recipients
+   * if record exists, update it; if not, insert it
+   */
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
-      const rec = new Recipient({
-        email: recipient.email,
-        messageId: recipient._links.email_message.split('/')[2]
+      const messageId = recipient._links.email_message.split('/')[2]
+      const query = {messageId: messageId, email: recipient.email}
+      const data = Object.assign({}, query)
+
+      return Recipient.update(query, data, {upsert: true}, function(err) {
+        if (err) {
+          module.exports.log('ERROR SAVING RECIPIENT ' + messageId + ':' + recipient.email, err)
+        }
       })
-      return module.exports.persist(rec, ['RECIPIENT', recipient.email])
     })
   },
 
@@ -106,14 +122,6 @@ module.exports = {
   saveMessages: function (messageData) {
     const messagePromises = module.exports.getSaveMessagePromises(messageData)
     return module.exports.executePromises(messagePromises)
-  },
-
-  persist: function(rec, logData) {
-    return rec.save(function(err) {
-      if (err) {
-        module.exports.log('ERROR SAVING ' + logData.join(' '), err)
-      }
-    })
   },
 
   /**

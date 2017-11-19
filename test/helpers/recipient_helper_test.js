@@ -20,6 +20,13 @@ chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 
 describe ('recipient_helper', () => {
+  beforeEach(function() {
+    return Email.remove({})
+      .then(() => {
+        return Recipient.remove({})
+      })
+  })
+
   it ('should execute promises (executePromises)', () => {
     const p1 = new Promise(function(resolve, reject) {
       resolve("done1")
@@ -109,18 +116,6 @@ describe ('recipient_helper', () => {
       })
   })
 
-  it ('should persist record', () => {
-    const rec = new Recipient({
-      email: 'blah'
-    })
-
-    return recipientHelper
-      .persist(rec, ['recipient', 'eric'])
-      .then((res) => {
-        res.email.should.equal('blah')
-      })
-  })
-
   it ('should read records from database (readMessages)', () => {
     const date = new Date().toString()
     const rec = new Email({
@@ -168,39 +163,38 @@ describe ('recipient_helper', () => {
     return promise
       .then(recipients => {
         recipients.length.should.equal(4)
-        recipients[0].messageId.should.equal('1')
 
         first.isDone().should.be.true
         second.isDone().should.be.true
         third.isDone().should.be.true
       })
       .then(() => {
-        return Email.where('messageId', '1').findOne(function(err, message) {
+        return Email.findOne({'messageId': '1'}, function(err, message) {
           message.subject.should.eq('subj1')
         })
       })
       .then(() => {
-        return Email.where('messageId', '2').findOne(function(err, message) {
+        return Email.findOne({'messageId': '2'}, function(err, message) {
           message.subject.should.eq('subj2')
         })
       })
       .then(() => {
-        return Recipient.where('email', 'r.fong@sink.granicus.com').findOne(function(err, message) {
+        return Recipient.findOne({'email': 'r.fong@sink.granicus.com'}, function(err, message) {
           message.messageId.should.eq('1')
         })
       })
       .then(() => {
-        return Recipient.where('email', 'e.ebbesen@sink.granicus.com').findOne(function(err, message) {
+        return Recipient.findOne({'email': 'e.ebbesen@sink.granicus.com'}, function(err, message) {
           message.messageId.should.eq('1')
         })
       })
       .then(() => {
-        return Recipient.where('email', 'r.fong2@sink.granicus.com').findOne(function(err, message) {
+        return Recipient.findOne({'email': 'r.fong2@sink.granicus.com'}, function(err, message) {
           message.messageId.should.eq('2')
         })
       })
       .then(() => {
-        return Recipient.where('email', 'e.ebbesen2@sink.granicus.com').findOne(function(err, message) {
+        return Recipient.findOne({'email': 'e.ebbesen2@sink.granicus.com'}, function(err, message) {
           message.messageId.should.eq('2')
         })
       })
