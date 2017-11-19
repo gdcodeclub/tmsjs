@@ -63,7 +63,7 @@ module.exports = {
       const query = {messageId: message.messageId}
       const data = Object.assign({}, query, {
         subject: message.subject,
-        date: message.created_at
+        date: message.date
       })
 
       return Email.update(query, data, {upsert: true}, function(err) {
@@ -90,7 +90,7 @@ module.exports = {
    */
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
-      const messageId = recipient._links.email_message.split('/')[2]
+      const messageId = recipient._links.email_message.split('/')[3]
       const query = {messageId: messageId, email: recipient.email}
       const data = Object.assign({}, query)
 
