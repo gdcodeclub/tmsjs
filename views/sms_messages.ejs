@@ -1,5 +1,26 @@
-<h2>SMS</h2>
+<% include partials/header%>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>SMS Messages</h1>
+    </div>
 
-<% data.map(function(d){ %>
-  <br><%= d.id %>&nbsp;&nbsp;<%= d.body %></br>
-<%})%>
+    <div class="panel panel-default">
+      <table class="table">
+        <tr>
+          <th>TMS ID</th>
+          <th>Date Sent</th>
+          <th>Body</th>
+        </tr>
+        <% data.map(function(d){ %>
+          <tr>
+            <td><%= d.messageId %></td>
+            <td><%= d.date %></td>
+            <td><%= d.body %></td>
+          </tr>
+        <%})%>
+      </div>
+    </div>
+  </div>
+<% include partials/footer%>

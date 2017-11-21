@@ -57,7 +57,9 @@ describe('routes', () => {
       .get('/m')
       .end((err, res) => {
         res.should.have.status(200)
-        res.text.should.contain('Subject Line')
+        res.text.should.contain('TMS ID')
+        res.text.should.contain('Date Sent')
+        res.text.should.contain('Subject')
         res.text.should.contain('first email')
         res.text.should.contain('second email')
 
@@ -121,9 +123,9 @@ describe('routes', () => {
       .get('/newe')
       .end((err, res) => {
         res.should.have.status(200)
-        res.text.should.contain('subject')
-        res.text.should.contain('message body')
-        res.text.should.contain('recipients')
+        res.text.should.contain('Subject')
+        res.text.should.contain('Message Body')
+        res.text.should.contain('Recipients')
         res.text.should.contain('Send Message')
         nock.isDone().should.be.true
 
@@ -241,7 +243,10 @@ describe('routes', () => {
       .get('/saved_messages')
       .end((err, res) => {
         res.should.have.status(200)
-        res.text.should.contain('Subject Line')
+        res.text.should.contain('Email Messages')
+        res.text.should.contain('TMS ID')
+        res.text.should.contain('Date Sent')
+        res.text.should.contain('Subject')
         res.text.should.contain('first email')
         res.text.should.contain('second email')
 

@@ -8,6 +8,10 @@ const recipientHelper = require('../helpers/recipient_helper')
 
 console.log('TMS baseURL set to ' + process.env.TMS_URL)
 
+router.get('/', function(req, res){
+  res.render('../views/home')
+})
+
 router.get('/fa', function(req, res){
   return engine
       .get('/from_addresses')

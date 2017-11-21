@@ -1,6 +1,26 @@
-<h2>Subject Line</h2>
+<% include partials/header%>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>Email Messages</h1>
+    </div>
 
-<% data.map(function(d){ %>
-  <br><%= d.messageId %>&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<%= d.date %>&nbsp;|&nbsp;&nbsp;<%= d.subject %></br>
-<%})%>
-
+    <div class="panel panel-default">
+      <table class="table">
+        <tr>
+          <th>TMS ID</th>
+          <th>Date Sent</th>
+          <th>Subject</th>
+        </tr>
+        <% data.map(function(d){ %>
+          <tr>
+            <td><%= d.messageId %></td>
+            <td><%= d.date %></td>
+            <td><%= d.subject %></td>
+          </tr>
+        <%})%>
+      </div>
+    </div>
+  </div>
+<% include partials/footer%>
