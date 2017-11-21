@@ -1,20 +1,26 @@
-<div class="container">
-  <div class="row">
-    <div>
-      <form action='/' method='POST'>
-        <div>
-          <input type='text' name='subject' placeholder='subject'>
-        </div>
-        <div>
-          <input type='textarea' name='body' placeholder='message body'>
-        </div>
-        <div>
-          <input type='textarea' name='recipients' placeholder='recipients'>
-        </div>
-        <div>
-          <button >Send Message</button>
-        </div>
-      </form>
+<% include partials/header%>
+</head>
+<body>
+  <div class="container">
+    <div class="page-header">
+      <h1>New Email Message</h1>
     </div>
+
+    <form action='/' method='POST'>
+      <div class="input-group">
+        <div>
+          <input type="text" class="form-control" placeholder="Subject" name="subject">
+        </div>
+        <div>
+          <input type="textarea" class="form-control" placeholder="Message Body" name="body">
+        </div>
+        <div>
+          <input type='textarea' class="form-control" placeholder='Recipients' name='recipients'>
+        </div>
+        <div>
+          <button class="btn btn-primary" type="button">Send Message</button>
+        </div>
+      </div>
+    </form>
   </div>
-</div>
+<% include partials/footer%>
