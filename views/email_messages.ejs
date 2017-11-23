@@ -7,19 +7,23 @@
     </div>
 
     <div class="panel panel-default">
-      <table class="table">
-        <tr>
-          <th>TMS ID</th>
-          <th>Date Sent</th>
-          <th>Subject</th>
-        </tr>
-        <% data.map(function(d){ %>
+      <table class="table table-hover">
+        <thead>
           <tr>
-            <td><%= d.messageId %></td>
-            <td><%= d.date %></td>
-            <td><%= d.subject %></td>
+            <th>TMS ID</th>
+            <th>Date Sent</th>
+            <th>Subject</th>
           </tr>
-        <%})%>
+        </thead>
+        <tbody>
+          <% data.map(function(d){ %>
+            <tr onclick="location.href='/e/<%= d.messageId %>'" style="cursor: pointer;">
+              <td><%= d.messageId %></td>
+              <td><%= d.date %></td>
+              <td><%= d.subject %></td>
+            </a></tr>
+          <%})%>
+        </tbody>
       </div>
     </div>
   </div>

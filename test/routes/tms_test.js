@@ -1,6 +1,7 @@
 // move these to test helper
 process.env.TMS_URL = 'https://fake.tms.url.com'
 process.env.TMS_KEY = 'hU5Hn0w'
+process.env.DATABASEURL = 'mongodb://localhost/test_tmsjs'
 
 const agent = require('supertest').agent(require('../../app'))
 const chai = require('chai')
@@ -9,10 +10,18 @@ const nock = require('nock')
 const should = chai.should()
 const sinon = require('sinon')
 const recipientHelper = require('../../helpers/recipient_helper')
+const Email = require('../../models/email')
+const Recipient = require('../../models/recipient')
 
 chai.use(chaiHttp);
 
 describe('routes', () => {
+  beforeEach(function() {
+    return Email.remove({})
+      .then(() => {
+        return Recipient.remove({})
+      })
+  })
 
   it('should show from addresses', (done) => {
     nock(process.env.TMS_URL)
@@ -238,7 +247,17 @@ describe('routes', () => {
   })
 
   it('should show saved email messages', (done) => {
-    // stub database call here....
+    const message = new Email({
+      subject: 'Hello!',
+      body: 'Hi!',
+      recipients: 'first@example.com,second@example.com'
+    })
+    message.save(err => {
+      if (err) {
+        console.log('ERROR SAVING ' + message + "\n" + err)
+      }
+    })
+
     agent
       .get('/saved_messages')
       .end((err, res) => {
@@ -247,8 +266,7 @@ describe('routes', () => {
         res.text.should.contain('TMS ID')
         res.text.should.contain('Date Sent')
         res.text.should.contain('Subject')
-        res.text.should.contain('first email')
-        res.text.should.contain('second email')
+        res.text.should.contain('Hello!')
 
         done()
       })

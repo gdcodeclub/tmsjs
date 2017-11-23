@@ -1,5 +1,6 @@
 process.env.TMS_URL = 'https://fake.tms.url.com'
 process.env.TMS_KEY = 'hU5Hn0w'
+process.env.DATABASEURL = 'mongodb://localhost/test_tmsjs'
 
 const chai = require('chai')
 const chaiHttp = require('chai-http')

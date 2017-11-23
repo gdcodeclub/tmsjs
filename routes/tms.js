@@ -89,6 +89,17 @@ router.get('/saved_messages', function(req, res){
     })
 })
 
+router.get('/e/:message_id', function(req, res){
+  return engine
+    .get('/messages/email/' + req.params.message_id)
+    .then(function(result){
+      res.render('../views/email_message', {data: result.data})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
+})
+
 
 
 module.exports = router
