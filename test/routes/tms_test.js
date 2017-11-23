@@ -1,6 +1,7 @@
 // move these to test helper
 process.env.TMS_URL = 'https://fake.tms.url.com'
 process.env.TMS_KEY = 'hU5Hn0w'
+process.env.DATABASEURL = 'mongodb://localhost/test_tmsjs'
 
 const agent = require('supertest').agent(require('../../app'))
 const chai = require('chai')
