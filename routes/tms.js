@@ -100,6 +100,19 @@ router.get('/e/:message_id', function(req, res){
     })
 })
 
+router.get('/search_recipients', function(req, res) {
+  res.render('../views/search_recipients')
+})
+
+router.post('/search_recipients', function(req, res) {
+  return recipientHelper.findRecipients(req.body.email)
+    .then(function(recipients) {
+      res.render('../views/recipients', {data: recipients, email: req.body.email})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS recipients: ', error)
+      res.redirect('/')
+    })
+})
 
 
 module.exports = router

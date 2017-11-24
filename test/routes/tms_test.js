@@ -249,8 +249,7 @@ describe('routes', () => {
   it('should show saved email messages', (done) => {
     const message = new Email({
       subject: 'Hello!',
-      body: 'Hi!',
-      recipients: 'first@example.com,second@example.com'
+      body: 'Hi!'
     })
     message.save(err => {
       if (err) {
@@ -270,5 +269,68 @@ describe('routes', () => {
 
         done()
       })
+  })
+
+  it ('should show search page', (done) => {
+    agent
+      .get('/search_recipients')
+      .end((req, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Search Recipients')
+
+        done()
+      })
+  })
+
+  describe ('search recipients', () => {
+    beforeEach(function() {
+      const email1 = new Email({
+        subject: 'A fine mailing',
+        date: new Date().toString(),
+        messageId: 1001
+      })
+      const saveEmailPromise1 = email1.save(err => {
+        if (err) {
+          console.log('ERROR SAVING ' + date, err)
+        }
+      })
+
+      const recipient1 = new Recipient({
+        messageId: 1001,
+        email: 'first@example.com'
+      })
+      const saveRecipientPromise1 = recipient1.save(err => {
+        if(err) {
+          console.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      return Promise.all([saveEmailPromise1, saveRecipientPromise1])
+        .then(result => {
+        })
+        .then(() => {
+          return recipientHelper.findRecipients('first@example.com')
+        }).then((records) => {
+           records.should.have.lengthOf(1)
+        })
+
+      return Promise.all([p1, p2])
+        .then(result => {
+          return true
+        })
+    })
+
+    it ('should search for recipients', (done) => {
+      agent
+        .post('/search_recipients')
+        .type('form')
+        .send({email: 'first@example.com'})
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('<td>1001</td>')
+
+          done(err)
+        })
+    })
   })
 })

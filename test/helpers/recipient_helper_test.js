@@ -145,6 +145,69 @@ describe ('recipient_helper', () => {
       })
   })
 
+  it ('should search for recipients', () => {
+    const email1 = new Email({
+      subject: 'A fine mailing',
+      date: new Date().toString(),
+      messageId: 1001
+    })
+    const saveEmailPromise1 = email1.save(err => {
+      if (err) {
+        console.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    const email2 = new Email({
+      subject: 'A better mailing',
+      date: new Date().toString(),
+      messageId: 1002
+    })
+    const saveEmailPromise2 = email2.save(err => {
+      if (err) {
+        console.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    const recipient1 = new Recipient({
+      messageId: 1001,
+      email: 'first@example.com'
+    })
+    const saveRecipientPromise1 = recipient1.save(err => {
+      if(err) {
+        console.log('ERROR SAVING RECIPIENT', err)
+      }
+    })
+
+    const recipient2 = new Recipient({
+      messageId: 1001,
+      email: 'second@example.com'
+    })
+    const saveRecipientPromise2 = recipient2.save(err => {
+      if(err) {
+        console.log('ERROR SAVING RECIPIENT', err)
+      }
+    })
+
+    const recipient3 = new Recipient({
+      messageId: 1002,
+      email: 'second@example.com'
+    })
+    const saveRecipientPromise3 = recipient3.save(err => {
+      if(err) {
+        console.log('ERROR SAVING RECIPIENT', err)
+      }
+    })
+
+    return Promise.all([saveEmailPromise1, saveEmailPromise2, saveRecipientPromise1, saveRecipientPromise2, saveRecipientPromise3])
+      .then(result => {
+      })
+      .then(() => {
+        return recipientHelper.findRecipients('first@example.com')
+      }).then((records) => {
+         records.should.have.lengthOf(1)
+      })
+  })
+
   // test unwieldy, but helpful during development
   it ('should populate messages and recipients (populateRecipients)', () => {
     const first = nock(process.env.TMS_URL)
