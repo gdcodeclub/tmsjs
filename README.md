@@ -1,7 +1,8 @@
 # TMSJS
 Express app for demoing TMS
 
-Currently only displays from addresses for an account, but there's more it will do: http://developer.govdelivery.com/api/tms/
+Uses [the GovDelivery TMS API](http://developer.govdelivery.com/api/tms/) to display message information. Offers the ability to download message and recipient data so that users can search for message by email address or phone number.
+
 
 ## Running
 1. Set TMS_URL to your URL with `export TMS_URL=https://stage-tms.govdelivery.com`

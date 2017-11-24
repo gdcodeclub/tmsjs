@@ -104,10 +104,10 @@ router.get('/search_recipients', function(req, res) {
   res.render('../views/search_recipients')
 })
 
-router.post('/search_recipients', function(req, res) {
-  return recipientHelper.findRecipients(req.body.email)
+router.get('/searche', function(req, res) {
+  return recipientHelper.findRecipients(req.query.email)
     .then(function(recipients) {
-      res.render('../views/recipients', {data: recipients, email: req.body.email})
+      res.render('../views/recipients', {data: recipients, email: req.query.email})
     }).catch(function(error){
       recipientHelper.log('error getting data from TMS recipients: ', error)
       res.redirect('/')

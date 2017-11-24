@@ -322,9 +322,9 @@ describe('routes', () => {
 
     it ('should search for recipients', (done) => {
       agent
-        .post('/search_recipients')
+        .get('/searche')
         .type('form')
-        .send({email: 'first@example.com'})
+        .query({email: 'first@example.com'})
         .end((err, res) => {
           res.should.have.status(200)
           res.text.should.contain('<td>1001</td>')
