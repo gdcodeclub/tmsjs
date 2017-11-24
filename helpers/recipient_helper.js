@@ -124,6 +124,15 @@ module.exports = {
     return module.exports.executePromises(messagePromises)
   },
 
+  findRecipients: function (email) {
+    return Recipient.find({email: email}, (err, messages) => {
+      if (err) {
+        module.exports.log('ERROR FINDING RECIPIENT:' + email, err)
+      }
+      return messages
+    })
+  },
+
   /**
    * when running tests don't fill console with expected errors
    * for debugging you may want to modify this method temporarily to see full error
