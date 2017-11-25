@@ -1,8 +1,9 @@
 <% include partials/header%>
 <% include partials/navbar%>
+<% const unique = [...new Set(data.map(r => r.email))] %>
   <div class="container">
     <div class="page-header">
-      <h1>Email Messages for <%= email %></h1>
+      <h1>Email Messages for <%= unique.join(', ') %></h1>
     </div>
 
     <div class="panel panel-default">
@@ -12,12 +13,20 @@
             <th>TMS ID</th>
             <th>Date Sent</th>
             <th>Subject</th>
+            <% if (unique.length > 1 ){ %>
+              <th>Email</th>
+            <% } %>
           </tr>
         </thead>
         <tbody>
           <% data.map(function(d){ %>
             <tr onclick="location.href='/e/<%= d.messageId %>'" style="cursor: pointer;">
               <td><%= d.messageId %></td>
+              <td></td>
+              <td></td>
+              <% if (unique.length > 1 ){ %>
+                <td><%= d.email %></td>
+              <% } %>
             </a></tr>
           <%})%>
         </tbody>

@@ -305,19 +305,17 @@ describe('routes', () => {
         }
       })
 
-      return Promise.all([saveEmailPromise1, saveRecipientPromise1])
-        .then(result => {
-        })
-        .then(() => {
-          return recipientHelper.findRecipients('first@example.com')
-        }).then((records) => {
-           records.should.have.lengthOf(1)
-        })
+      const recipient2 = new Recipient({
+        messageId: 1001,
+        email: 'second@example.com'
+      })
+      const saveRecipientPromise2 = recipient2.save(err => {
+        if(err) {
+          console.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
 
-      return Promise.all([p1, p2])
-        .then(result => {
-          return true
-        })
+      return Promise.all([saveEmailPromise1, saveRecipientPromise1, saveRecipientPromise2])
     })
 
     it ('should search for recipients', (done) => {
@@ -328,6 +326,22 @@ describe('routes', () => {
         .end((err, res) => {
           res.should.have.status(200)
           res.text.should.contain('<td>1001</td>')
+
+          done(err)
+        })
+    })
+
+    it ('should search for recipients when multiple returned', (done) => {
+      agent
+        .get('/searche')
+        .type('form')
+        .query({email: 'example.com'})
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('Email Messages for first@example.com, second@example.com')
+          res.text.should.contain('<td>1001</td>')
+          res.text.should.contain('<td>first@example.com</td>')
+          res.text.should.contain('<td>second@example.com</td>')
 
           done(err)
         })
