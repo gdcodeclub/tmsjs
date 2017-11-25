@@ -125,11 +125,13 @@ module.exports = {
   },
 
   findRecipients: function (email) {
-    return Recipient.find({email: email}, (err, messages) => {
+    return Recipient.find({email: { $regex: '.*' + email + '.*' }})
+      .sort({messageId: 'asc', email: 'asc'})
+      .exec((err, recipients) => {
       if (err) {
-        module.exports.log('ERROR FINDING RECIPIENT:' + email, err)
+        module.exports.log('ERROR FINDING RECIPIENTS:' + email, err)
       }
-      return messages
+      return recipients
     })
   },
 

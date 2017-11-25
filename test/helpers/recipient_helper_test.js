@@ -145,67 +145,86 @@ describe ('recipient_helper', () => {
       })
   })
 
-  it ('should search for recipients', () => {
-    const email1 = new Email({
-      subject: 'A fine mailing',
-      date: new Date().toString(),
-      messageId: 1001
-    })
-    const saveEmailPromise1 = email1.save(err => {
-      if (err) {
-        console.log('ERROR SAVING ' + date, err)
-      }
-    })
-
-    const email2 = new Email({
-      subject: 'A better mailing',
-      date: new Date().toString(),
-      messageId: 1002
-    })
-    const saveEmailPromise2 = email2.save(err => {
-      if (err) {
-        console.log('ERROR SAVING ' + date, err)
-      }
-    })
-
-    const recipient1 = new Recipient({
-      messageId: 1001,
-      email: 'first@example.com'
-    })
-    const saveRecipientPromise1 = recipient1.save(err => {
-      if(err) {
-        console.log('ERROR SAVING RECIPIENT', err)
-      }
-    })
-
-    const recipient2 = new Recipient({
-      messageId: 1001,
-      email: 'second@example.com'
-    })
-    const saveRecipientPromise2 = recipient2.save(err => {
-      if(err) {
-        console.log('ERROR SAVING RECIPIENT', err)
-      }
-    })
-
-    const recipient3 = new Recipient({
-      messageId: 1002,
-      email: 'second@example.com'
-    })
-    const saveRecipientPromise3 = recipient3.save(err => {
-      if(err) {
-        console.log('ERROR SAVING RECIPIENT', err)
-      }
-    })
-
-    return Promise.all([saveEmailPromise1, saveEmailPromise2, saveRecipientPromise1, saveRecipientPromise2, saveRecipientPromise3])
-      .then(result => {
+  describe('recipient search', () => {
+    beforeEach(() => {
+      const email1 = new Email({
+        subject: 'A fine mailing',
+        date: new Date().toString(),
+        messageId: 1001
       })
-      .then(() => {
-        return recipientHelper.findRecipients('first@example.com')
-      }).then((records) => {
-         records.should.have.lengthOf(1)
+      const saveEmailPromise1 = email1.save(err => {
+        if (err) {
+          console.log('ERROR SAVING ' + date, err)
+        }
       })
+
+      const email2 = new Email({
+        subject: 'A better mailing',
+        date: new Date().toString(),
+        messageId: 1002
+      })
+      const saveEmailPromise2 = email2.save(err => {
+        if (err) {
+          console.log('ERROR SAVING ' + date, err)
+        }
+      })
+
+      const recipient1 = new Recipient({
+        messageId: 1001,
+        email: 'first@example.com'
+      })
+      const saveRecipientPromise1 = recipient1.save(err => {
+        if(err) {
+          console.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      const recipient2 = new Recipient({
+        messageId: 1001,
+        email: 'second@example.com'
+      })
+      const saveRecipientPromise2 = recipient2.save(err => {
+        if(err) {
+          console.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      const recipient3 = new Recipient({
+        messageId: 1002,
+        email: 'second@example.com'
+      })
+      const saveRecipientPromise3 = recipient3.save(err => {
+        if(err) {
+          console.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      return Promise.all([saveEmailPromise1, saveEmailPromise2, saveRecipientPromise1, saveRecipientPromise2, saveRecipientPromise3])
+    })
+
+    it ('should search for recipients', () => {
+      return recipientHelper.findRecipients('first@example.com')
+        .then((records) => {
+           records.should.have.lengthOf(1)
+
+           records[0].messageId.should.equal('1001')
+           records[0].email.should.equal('first@example.com')
+        })
+    })
+
+    it ('should search for recipients wildcard', () => {
+      return recipientHelper.findRecipients('example')
+        .then((records) => {
+           records.should.have.lengthOf(3)
+
+           records[0].messageId.should.equal('1001')
+           records[0].email.should.equal('first@example.com')
+           records[1].messageId.should.equal('1001')
+           records[1].email.should.equal('second@example.com')
+           records[2].messageId.should.equal('1002')
+           records[2].email.should.equal('second@example.com')
+        })
+    })
   })
 
   // test unwieldy, but helpful during development
