@@ -9,7 +9,11 @@ const recipientHelper = require('../helpers/recipient_helper')
 console.log('TMS baseURL set to ' + process.env.TMS_URL)
 
 router.get('/', function(req, res){
-  res.render('../views/home')
+  return recipientHelper.readLastDownloadDate()
+    .then(dates => {
+      res.render('../views/home', {data: dates})
+    })
+
 })
 
 router.get('/fa', function(req, res){
