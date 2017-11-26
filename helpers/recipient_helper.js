@@ -128,10 +128,29 @@ module.exports = {
     return Recipient.find({email: { $regex: '.*' + email + '.*' }})
       .sort({messageId: 'asc', email: 'asc'})
       .exec((err, recipients) => {
-      if (err) {
-        module.exports.log('ERROR FINDING RECIPIENTS:' + email, err)
-      }
-      return recipients
+        if (err) {
+          module.exports.log('ERROR FINDING RECIPIENTS:' + email, err)
+        }
+        return recipients
+      })
+  },
+
+  findMessage: function (messageId) {
+    return Email.findOne({messageId: messageId})
+      .exec((err, message) => {
+        if (err) {
+          module.exports.log('ERROR FINDING MESSAGE: ' + messageId, err)
+        }
+        return message
+      })
+  },
+
+  decorateRecipients: function(recipients) {
+    return recipients.map((recipient) => {
+      return module.exports.findMessage(recipient.messageId)
+        .then(message => {
+          return Object.assign({email: recipient.email, messageId: recipient.messageId}, {date: message.date, subject: message.subject})
+        })
     })
   },
 
