@@ -22,8 +22,8 @@
           <% data.map(function(d){ %>
             <tr onclick="location.href='/e/<%= d.messageId %>'" style="cursor: pointer;">
               <td><%= d.messageId %></td>
-              <td></td>
-              <td></td>
+              <td><%= d.date %></td>
+              <td><%= d.subject %></td>
               <% if (unique.length > 1 ){ %>
                 <td><%= d.email %></td>
               <% } %>

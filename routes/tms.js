@@ -107,6 +107,9 @@ router.get('/search_recipients', function(req, res) {
 router.get('/searche', function(req, res) {
   return recipientHelper.findRecipients(req.query.email)
     .then(function(recipients) {
+      return recipientHelper.executePromises(recipientHelper.decorateRecipients(recipients))
+    })
+    .then(function(recipients) {
       res.render('../views/recipients', {data: recipients, email: req.query.email})
     }).catch(function(error){
       recipientHelper.log('error getting data from TMS recipients: ', error)

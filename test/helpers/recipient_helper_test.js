@@ -225,6 +225,22 @@ describe ('recipient_helper', () => {
            records[2].email.should.equal('second@example.com')
         })
     })
+
+    it ('should decorate recipients', () => {
+      const decorated = recipientHelper.decorateRecipients(
+        [{ _id: '5a198c1ac812633725a5bbb9',
+          messageId: '1001',
+          email: 'second@example.com',
+          __v: 0 }])
+      return Promise.all(decorated)
+        .then(res => {
+          res[0].messageId.should.equal('1001')
+          res[0].email.should.equal('second@example.com')
+          res[0].subject.should.equal('A fine mailing')
+          res[0].date.should.not.be.null
+        })
+
+    })
   })
 
   // test unwieldy, but helpful during development
