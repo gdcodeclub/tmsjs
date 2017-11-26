@@ -8,6 +8,7 @@ var chaiAsPromised = require("chai-as-promised");
 const nock = require('nock')
 const should = chai.should()
 const sinon = require('sinon')
+const Download = require('../../models/download')
 const Email = require('../../models/email')
 const Recipient = require('../../models/recipient')
 const recipientHelper = require('../../helpers/recipient_helper')
@@ -25,6 +26,9 @@ describe ('recipient_helper', () => {
     return Email.remove({})
       .then(() => {
         return Recipient.remove({})
+          .then(() => {
+            return Download.remove({})
+          })
       })
   })
 
@@ -278,23 +282,28 @@ describe ('recipient_helper', () => {
         })
       })
       .then(() => {
-        return Recipient.findOne({'email': 'r.fong@sink.granicus.com'}, function(err, message) {
-          message.messageId.should.eq('1')
+        return Recipient.findOne({'email': 'r.fong@sink.granicus.com'}, function(err, recipient) {
+          recipient.messageId.should.eq('1')
         })
       })
       .then(() => {
-        return Recipient.findOne({'email': 'e.ebbesen@sink.granicus.com'}, function(err, message) {
-          message.messageId.should.eq('1')
+        return Recipient.findOne({'email': 'e.ebbesen@sink.granicus.com'}, function(err, recipient) {
+          recipient.messageId.should.eq('1')
         })
       })
       .then(() => {
-        return Recipient.findOne({'email': 'r.fong2@sink.granicus.com'}, function(err, message) {
-          message.messageId.should.eq('2')
+        return Recipient.findOne({'email': 'r.fong2@sink.granicus.com'}, function(err, recipient) {
+          recipient.messageId.should.eq('2')
         })
       })
       .then(() => {
-        return Recipient.findOne({'email': 'e.ebbesen2@sink.granicus.com'}, function(err, message) {
-          message.messageId.should.eq('2')
+        return Recipient.findOne({'email': 'e.ebbesen2@sink.granicus.com'}, function(err, recipient) {
+          recipient.messageId.should.eq('2')
+        })
+      })
+      .then(() => {
+        return Download.findOne({}, function(err, dl) {
+          dl.should.not.be.null
         })
       })
   })

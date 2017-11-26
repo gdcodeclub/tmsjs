@@ -1,3 +1,4 @@
+const Download = require('../models/download')
 const Email = require('../models/email')
 const Recipient = require('../models/recipient')
 module.exports = {
@@ -44,6 +45,15 @@ module.exports = {
       .then(function(messageData) {
         return module.exports.saveMessageRecipients(engine, messageData)
       })
+      .then(function(recipientData) {
+        const dl = new Download({date: new Date()})
+        dl.save((err, download) => {
+          if (err) {
+            module.exports.log('ERROR SAVING DOWNLOAD DATA', err)
+          }
+        })
+        return recipientData
+      })
   },
 
   /** get recipients from TMS */
@@ -82,6 +92,18 @@ module.exports = {
       }
       return messages
     })
+  },
+
+  /** read latest download date from database */
+  readLastDownloadDate: function(engine) {
+    return Download.findOne({})
+      .sort({date: 'desc'})
+      .exec((err, date) => {
+        if (err) {
+          module.exports.log('ERROR FINDING DATE:', err)
+        }
+        return date
+      })
   },
 
   /**
