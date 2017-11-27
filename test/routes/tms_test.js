@@ -8,12 +8,11 @@ const chai = require('chai')
 const chaiHttp = require('chai-http')
 const nock = require('nock')
 const should = chai.should()
-const sinon = require('sinon')
 const recipientHelper = require('../../helpers/recipient_helper')
 const Email = require('../../models/email')
 const Recipient = require('../../models/recipient')
 
-chai.use(chaiHttp);
+chai.use(chaiHttp)
 
 describe('routes', () => {
   beforeEach(function() {
@@ -60,7 +59,7 @@ describe('routes', () => {
   it('should show email messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/email')
-      .reply(200, [{'subject': 'first email'}, {'subject': 'second email'}]);
+      .reply(200, [{'subject': 'first email'}, {'subject': 'second email'}])
 
     agent
       .get('/m')
@@ -96,7 +95,7 @@ describe('routes', () => {
   it('should show sms messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/sms')
-      .reply(200, [{body: 'welcome to our text'}, {'body': 'sms rulz'}]);
+      .reply(200, [{body: 'welcome to our text'}, {'body': 'sms rulz'}])
 
     agent
       .get('/s')
@@ -156,7 +155,7 @@ describe('routes', () => {
       .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
                    {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
 
-     agent
+    agent
       .get('/slurpe')
       .then(res => {
         res.should.have.status(302)
@@ -196,14 +195,14 @@ describe('routes', () => {
     }
 
     const mockResponse = {
-      "id": 8675309,
-      "subject": "Hello!",
-      "body": "Hi!"
+      'id': 8675309,
+      'subject': 'Hello!',
+      'body': 'Hi!'
     }
 
     nock(process.env.TMS_URL)
       .post('/messages/email', mockData)
-      .reply(200, mockResponse);
+      .reply(200, mockResponse)
 
     const message = {
       subject: 'Hello!',
@@ -253,7 +252,7 @@ describe('routes', () => {
     })
     message.save(err => {
       if (err) {
-        console.log('ERROR SAVING ' + message + "\n" + err)
+        recipientHelper.log('ERROR SAVING ' + message + "\n" + err)
       }
     })
 
@@ -291,7 +290,7 @@ describe('routes', () => {
       })
       const saveEmailPromise1 = email1.save(err => {
         if (err) {
-          console.log('ERROR SAVING ' + date, err)
+          recipientHelper.log('ERROR SAVING ' + email1.subject, err)
         }
       })
 
@@ -301,7 +300,7 @@ describe('routes', () => {
       })
       const saveRecipientPromise1 = recipient1.save(err => {
         if(err) {
-          console.log('ERROR SAVING RECIPIENT', err)
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
         }
       })
 
@@ -311,7 +310,7 @@ describe('routes', () => {
       })
       const saveRecipientPromise2 = recipient2.save(err => {
         if(err) {
-          console.log('ERROR SAVING RECIPIENT', err)
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
         }
       })
 

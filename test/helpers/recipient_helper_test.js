@@ -4,10 +4,9 @@ process.env.DATABASEURL = 'mongodb://localhost/test_tmsjs'
 
 const chai = require('chai')
 const chaiHttp = require('chai-http')
-var chaiAsPromised = require("chai-as-promised");
+var chaiAsPromised = require('chai-as-promised')
 const nock = require('nock')
 const should = chai.should()
-const sinon = require('sinon')
 const Download = require('../../models/download')
 const Email = require('../../models/email')
 const Recipient = require('../../models/recipient')
@@ -16,10 +15,9 @@ const axios = require('axios')
 const engine = axios.create({
   baseURL: process.env.TMS_URL,
   headers: {'X-Auth-Token': process.env.TMS_KEY}})
-const mongoose = require('mongoose')
 
-chai.use(chaiHttp);
-chai.use(chaiAsPromised);
+chai.use(chaiHttp)
+chai.use(chaiAsPromised)
 
 describe ('recipient_helper', () => {
   beforeEach(function() {
@@ -33,14 +31,14 @@ describe ('recipient_helper', () => {
   })
 
   it ('should execute promises (executePromises)', () => {
-    const p1 = new Promise(function(resolve, reject) {
-      resolve("done1")
+    const p1 = new Promise(function(resolve) {
+      resolve('done1')
     })
-    const p2 = new Promise(function(resolve, reject) {
-      resolve("done2")
+    const p2 = new Promise(function(resolve) {
+      resolve('done2')
     })
-    const p3 = new Promise(function(resolve, reject) {
-      resolve("done3")
+    const p3 = new Promise(function(resolve) {
+      resolve('done3')
     })
 
     return recipientHelper.executePromises([p1, p2, p3])
@@ -74,7 +72,7 @@ describe ('recipient_helper', () => {
 
     promises.should.have.lengthOf(2)
     Promise.all(promises)
-      .then(res => {
+      .then(() => {
         first.isDone().should.be.true
         second.isDone().should.be.true
 
@@ -105,7 +103,7 @@ describe ('recipient_helper', () => {
   })
 
   it('should handle get save messages error (getSaveMessagePromises)', (done) => {
-    should.throw(() => recipientHelper.getSaveMessagePromises(nil), ReferenceError)
+    should.throw(() => recipienthelper.getSaveMessagePromises(blah), ReferenceError)
 
     done()
   })
@@ -130,7 +128,7 @@ describe ('recipient_helper', () => {
     })
     const savePromise = rec.save(err => {
       if (err) {
-        console.log('ERROR SAVING ' + date, err)
+        recipientHelper.log('ERROR SAVING ' + date, err)
       }
     })
 
@@ -158,7 +156,7 @@ describe ('recipient_helper', () => {
       })
       const saveEmailPromise1 = email1.save(err => {
         if (err) {
-          console.log('ERROR SAVING ' + date, err)
+          recipientHelper.log('ERROR SAVING ' + email1.subject, err)
         }
       })
 
@@ -169,7 +167,7 @@ describe ('recipient_helper', () => {
       })
       const saveEmailPromise2 = email2.save(err => {
         if (err) {
-          console.log('ERROR SAVING ' + date, err)
+          recipientHelper.log('ERROR SAVING ' + email2.subject, err)
         }
       })
 
@@ -179,7 +177,7 @@ describe ('recipient_helper', () => {
       })
       const saveRecipientPromise1 = recipient1.save(err => {
         if(err) {
-          console.log('ERROR SAVING RECIPIENT', err)
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
         }
       })
 
@@ -189,7 +187,7 @@ describe ('recipient_helper', () => {
       })
       const saveRecipientPromise2 = recipient2.save(err => {
         if(err) {
-          console.log('ERROR SAVING RECIPIENT', err)
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
         }
       })
 
@@ -199,7 +197,7 @@ describe ('recipient_helper', () => {
       })
       const saveRecipientPromise3 = recipient3.save(err => {
         if(err) {
-          console.log('ERROR SAVING RECIPIENT', err)
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
         }
       })
 
@@ -209,24 +207,24 @@ describe ('recipient_helper', () => {
     it ('should search for recipients', () => {
       return recipientHelper.findRecipients('first@example.com')
         .then((records) => {
-           records.should.have.lengthOf(1)
+          records.should.have.lengthOf(1)
 
-           records[0].messageId.should.equal('1001')
-           records[0].email.should.equal('first@example.com')
+          records[0].messageId.should.equal('1001')
+          records[0].email.should.equal('first@example.com')
         })
     })
 
     it ('should search for recipients wildcard', () => {
       return recipientHelper.findRecipients('example')
         .then((records) => {
-           records.should.have.lengthOf(3)
+          records.should.have.lengthOf(3)
 
-           records[0].messageId.should.equal('1001')
-           records[0].email.should.equal('first@example.com')
-           records[1].messageId.should.equal('1001')
-           records[1].email.should.equal('second@example.com')
-           records[2].messageId.should.equal('1002')
-           records[2].email.should.equal('second@example.com')
+          records[0].messageId.should.equal('1001')
+          records[0].email.should.equal('first@example.com')
+          records[1].messageId.should.equal('1001')
+          records[1].email.should.equal('second@example.com')
+          records[2].messageId.should.equal('1002')
+          records[2].email.should.equal('second@example.com')
         })
     })
 
