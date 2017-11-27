@@ -48,6 +48,12 @@ To run with code coverage
 npm run itest
 ```
 
+## Lint
+This project uses ESLint
+```
+ eslint . --ext .js
+```
+
 ## Working with Docker
 ### ssh to a box
 ```
