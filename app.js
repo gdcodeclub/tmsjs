@@ -1,7 +1,6 @@
 const express =  require('express')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
-const request = require('request')
 const tmsRoutes = require('./routes/tms')
 const port = process.env.PORT ||  8080
 
@@ -9,9 +8,9 @@ const port = process.env.PORT ||  8080
 const mongoose = require('mongoose')
 const databaseUrl = process.env.DATABASEURL || 'mongodb://localhost/tmsjs'
 mongoose.connect(databaseUrl)
-const db = mongoose.connection;
+const db = mongoose.connection
 db.on('connection', console.error.bind(console, 'MongoDB connection success:'))
-db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.on('error', console.error.bind(console, 'MongoDB connection error:'))
 console.log('INITIALIZED DATABASE', databaseUrl)
 
 const app = express()

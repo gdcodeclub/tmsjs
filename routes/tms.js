@@ -18,35 +18,35 @@ router.get('/', function(req, res){
 
 router.get('/fa', function(req, res){
   return engine
-      .get('/from_addresses')
-      .then(function(result){
-        res.render('../views/account_info', {data: result.data})
-      }).catch(function(error){
-        recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-        res.redirect('/')
-      })
+    .get('/from_addresses')
+    .then(function(result){
+      res.render('../views/account_info', {data: result.data})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
 })
 
 router.get('/m', function(req, res){
   return engine
-      .get('/messages/email')
-      .then(function(result){
-        res.render('../views/email_messages', {data: result.data})
-      }).catch(function(error){
-        recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-        res.redirect('/')
-      })
+    .get('/messages/email')
+    .then(function(result){
+      res.render('../views/email_messages', {data: result.data})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
 })
 
 router.get('/s', function(req, res){
   return engine
-      .get('/messages/sms')
-      .then(function(result){
-        res.render('../views/sms_messages', {data: result.data})
-      }).catch(function(error){
-        recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-        res.redirect('/')
-      })
+    .get('/messages/sms')
+    .then(function(result){
+      res.render('../views/sms_messages', {data: result.data})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
 })
 
 router.get('/newe', function(req, res){
@@ -55,7 +55,7 @@ router.get('/newe', function(req, res){
 
 router.get('/slurpe', function(req, res){
   return recipientHelper.populateRecipients(engine)
-    .then(function(sr) {
+    .then(() => {
       res.redirect('/')
     })
     .catch(function(error){
@@ -78,7 +78,7 @@ router.post('/', function(req, res){
 
   return engine
     .post('/messages/email', email_message)
-    .then(function(result){
+    .then(() => {
       res.redirect('/m')
     }).catch(function(error){
       recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)

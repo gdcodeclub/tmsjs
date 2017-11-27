@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 
 const EmailSchema = new mongoose.Schema({
   subject: String,
