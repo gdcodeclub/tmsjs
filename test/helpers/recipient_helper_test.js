@@ -139,7 +139,7 @@ describe ('recipient_helper', () => {
         res.date.should.equal(rec.date)
       })
       .then(() => {
-        return recipientHelper.readMessages(engine)
+        return recipientHelper.readMessages()
           .then(messages => {
             const message = messages[messages.length - 1]
             message.date.should.equal(rec.date)

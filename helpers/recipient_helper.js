@@ -21,13 +21,13 @@ module.exports = {
    * that TMSJS refers to as "messageId"
    */
   getMessageData: function(engine) {
-  return engine
-    .get('/messages/email')
-    .then(function(result){
-      return result.data.map((email) => {
-        return { messageId: email.id, subject: email.subject, date: email.created_at }
+    return engine
+      .get('/messages/email')
+      .then(function(result){
+        return result.data.map((email) => {
+          return { messageId: email.id, subject: email.subject, date: email.created_at }
+        })
       })
-    })
   },
 
   /**
@@ -39,7 +39,7 @@ module.exports = {
   populateRecipients: function(engine) {
     return module.exports.getMessageData(engine)
       .then(function(messageData) {
-        const res = module.exports.saveMessages(messageData)
+        module.exports.saveMessages(messageData)
         return messageData
       })
       .then(function(messageData) {
@@ -47,7 +47,7 @@ module.exports = {
       })
       .then(function(recipientData) {
         const dl = new Download({date: new Date()})
-        dl.save((err, download) => {
+        dl.save(err => {
           if (err) {
             module.exports.log('ERROR SAVING DOWNLOAD DATA', err)
           }
@@ -78,14 +78,14 @@ module.exports = {
 
       return Email.update(query, data, {upsert: true}, function(err) {
         if (err) {
-          module.exports.log('ERROR SAVING MESSAGE ' + messageId, err)
+          module.exports.log('ERROR SAVING MESSAGE ' + query.messageId, err)
         }
       })
     })
   },
 
   /** read messages from database */
-  readMessages: function(engine) {
+  readMessages: function() {
     return Email.find(function(err, messages){
       if (err) {
         module.exports.log('error retrieving messages from database', err)
@@ -95,7 +95,7 @@ module.exports = {
   },
 
   /** read latest download date from database */
-  readLastDownloadDate: function(engine) {
+  readLastDownloadDate: function() {
     return Download.findOne({})
       .sort({date: 'desc'})
       .exec((err, date) => {
