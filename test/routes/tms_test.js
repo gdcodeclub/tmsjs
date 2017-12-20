@@ -283,6 +283,38 @@ describe('routes', () => {
       })
   })
 
+  it('should post sms message', (done) => {
+    const mockData = {
+      body: 'Hi!',
+      recipients: [{phone:'16515551212'},{phone: '16515557878'}]
+    }
+
+    const mockResponse = {
+      'id': 8675309,
+      'body': 'Hi!'
+    }
+
+    nock(process.env.TMS_URL)
+      .post('/messages/sms', mockData)
+      .reply(200, mockResponse)
+
+    const message = {
+      body: 'Hi!',
+      recipients: '16515551212,16515557878'
+    }
+
+    agent
+      .post('/sms')
+      .type('form')
+      .send(message)
+      .end((err, res) => {
+        res.should.have.status(302)
+        nock.isDone().should.be.true
+
+        done(err)
+      })
+  })
+
   it('should show saved email messages', (done) => {
     const message = new Email({
       subject: 'Hello!',

@@ -101,6 +101,27 @@ router.post('/', function(req, res){
     })
 })
 
+router.post('/sms', function(req, res){
+  const recipients = []
+  req.body['recipients'].split(',').map((phone) => {
+    recipients.push({ phone: phone })
+  })
+
+  const sms_message = {
+    body: req.body['body'],
+    recipients: recipients
+  }
+
+  return engine
+    .post('/messages/sms', sms_message)
+    .then(() => {
+      res.redirect('/s')
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
+})
+
 router.get('/saved_messages', function(req, res){
   recipientHelper.readMessages()
     .then(function(messages) {

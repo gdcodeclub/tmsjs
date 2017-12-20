@@ -14,8 +14,8 @@
         </tr>
         <% data.map(function(d){ %>
           <tr>
-            <td><%= d.messageId %></td>
-            <td><%= d.date %></td>
+            <td><%= d.id %></td>
+            <td><%= d.created_at %></td>
             <td><%= d.body %></td>
           </tr>
         <%})%>
