@@ -54,17 +54,6 @@ router.get('/newe', function(req, res){
 })
 
 router.get('/slurpe', function(req, res){
-  return recipientHelper.populateSmsRecipients(engine)
-    .then(() => {
-      res.redirect('/')
-    })
-    .catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
-    })
-})
-
-router.get('/slurps', function(req, res){
   return recipientHelper.populateRecipients(engine)
     .then(() => {
       res.redirect('/')
