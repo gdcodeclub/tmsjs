@@ -42,7 +42,6 @@ module.exports = {
       .get('/messages/sms')
       .then(function(result){
         return result.data.map((sms) => {
-          console.log('jjjjjj', sms)
           return { messageId: sms.id, body: sms.body, date: sms.created_at }
         })
       })
@@ -100,11 +99,19 @@ module.exports = {
       })
   },
 
-  /** get recipients from TMS */
+  /** get email recipients from TMS */
   getGetRecipientPromises: function (engine, messageData) {
     return messageData.map((message) => {
       return engine
         .get('/messages/email/' + message.messageId + '/recipients')
+    })
+  },
+
+  /** get sms recipients from TMS */
+  getGetSmsRecipientPromises: function (engine, messageData) {
+    return messageData.map((message) => {
+      return engine
+        .get('/messages/sms/' + message.messageId + '/recipients')
     })
   },
 
@@ -134,7 +141,6 @@ module.exports = {
    */
   getSaveSmsMessagePromises: function (messages) {
     return [].concat(...messages).map((message) => {
-      console.log('hhhhh', message)
       const query = {messageId: message.messageId}
       const data = Object.assign({}, query, {
         body: message.body,
@@ -172,7 +178,7 @@ module.exports = {
   },
 
   /**
-   * persist recipients
+   * persist email recipients
    * if record exists, update it; if not, insert it
    */
   getSaveRecipientPromises: function (recipients) {
@@ -184,6 +190,24 @@ module.exports = {
       return Recipient.update(query, data, {upsert: true}, function(err) {
         if (err) {
           module.exports.log('ERROR SAVING RECIPIENT ' + messageId + ':' + recipient.email, err)
+        }
+      })
+    })
+  },
+
+  /**
+   * persist SMS recipients
+   * if record exists, update it; if not, insert it
+   */
+  getSaveSmsRecipientPromises: function (recipients) {
+    return [].concat(...recipients).map((recipient) => {
+      const messageId = recipient._links.sms_message.split('/')[3]
+      const query = {messageId: messageId, phone: recipient.phone}
+      const data = Object.assign({}, query)
+
+      return Recipient.update(query, data, {upsert: true}, function(err) {
+        if (err) {
+          module.exports.log('ERROR SAVING RECIPIENT ' + messageId + ':' + recipient.phone, err)
         }
       })
     })
@@ -209,7 +233,7 @@ module.exports = {
 
   // need to test cover
   saveSmsMessageRecipients: function (engine, messageData) {
-    const getRecipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
+    const getRecipientPromises = module.exports.getGetSmsRecipientPromises(engine, messageData)
     return Promise.all(getRecipientPromises)
       .then(result => {
         return result
@@ -220,7 +244,7 @@ module.exports = {
         })
       })
       .then(function(rdata) {
-        const savePromises = module.exports.getSaveRecipientPromises(rdata)
+        const savePromises = module.exports.getSaveSmsRecipientPromises(rdata)
         return module.exports.executePromises(savePromises)
       })
   },

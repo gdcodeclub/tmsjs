@@ -98,6 +98,31 @@ describe ('recipient_helper', () => {
       })
   })
 
+  it ('should get SMS recipients with message id (getGetSmsRecipientPromises)', (done) => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients')
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+    const second = nock(process.env.TMS_URL)
+      .get('/messages/sms/2/recipients')
+      .reply(200, [{'email': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
+                   {'email': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+
+    const promises = recipientHelper.getGetSmsRecipientPromises(engine, [{messageId: 1, body: 'body1', date: '2017-01-30T17:45:27Z'},
+                                                                         {messageId: 2, body: 'body2', date: '2017-02-30T17:45:27Z'}])
+
+    promises.should.have.lengthOf(2)
+    Promise.all(promises)
+      .then(() => {
+        first.isDone().should.be.true
+        second.isDone().should.be.true
+
+        done()
+      }).catch(function(err) {
+        return done(err)
+      })
+  })
+
   it ('should get save recipients (getSaveRecipientPromises)', (done) => {
     const recipients = [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
                         {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}]
@@ -108,7 +133,7 @@ describe ('recipient_helper', () => {
     done()
   })
 
-  it.only ('should get save SMS messages (getSaveSmsMessagePromises)', (done) => {
+  it ('should get save SMS messages (getSaveSmsMessagePromises)', (done) => {
     const messages = [{'body':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'},
                       {'body':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
 
@@ -144,7 +169,7 @@ describe ('recipient_helper', () => {
       })
   })
 
-  it.only ('should save SMS messages (saveSmsMessages)', () => {
+  it ('should save SMS messages (saveSmsMessages)', () => {
     const messages = [{'body':'message1', 'id':1000, 'created_at':'2017-01-30T17:45:27Z'},
                       {'body':'message2', 'id':1001, 'created_at':'2017-09-29T08:17:11Z'}]
     const promises = recipientHelper.saveSmsMessages(messages)
@@ -342,19 +367,19 @@ describe ('recipient_helper', () => {
   })
 
   // test unwieldy, but helpful during development
-  it.only ('should populate sms messages and recipients (populateSmsRecipients)', () => {
+  it ('should populate sms messages and recipients (populateSmsRecipients)', () => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/sms')
       .reply(200, [{'id': 1, 'body':'sms1', 'created_at':'2017-01-30T17:45:27Z'},
                    {'id': 2, 'body':'sms2', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'sms': '16515551212', '_links':{'sms_message':'/messages/sms/1'}},
-                   {'sms': '16515557878', '_links':{'sms_message':'/messages/sms/1'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'sms': '16515551213', '_links':{'sms_message':'/messages/sms/2'}},
-                   {'sms': '16515557879', '_links':{'sms_message':'/messages/sms/2'}}])
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2'}}])
     const promise = recipientHelper.populateSmsRecipients(engine)
 
     return promise
@@ -366,13 +391,13 @@ describe ('recipient_helper', () => {
         third.isDone().should.be.true
       })
       .then(() => {
-        return Email.findOne({'messageId': '1'}, function(err, message) {
-          message.subject.should.eq('sms1')
+        return Sms.findOne({'messageId': '1'}, function(err, message) {
+          message.body.should.eq('sms1')
         })
       })
       .then(() => {
-        return Email.findOne({'messageId': '2'}, function(err, message) {
-          message.subject.should.eq('sms2')
+        return Sms.findOne({'messageId': '2'}, function(err, message) {
+          message.body.should.eq('sms2')
         })
       })
       .then(() => {

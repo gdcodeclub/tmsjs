@@ -54,7 +54,7 @@ router.get('/newe', function(req, res){
 })
 
 router.get('/slurpe', function(req, res){
-  return recipientHelper.populateSmsRecipients(engine)
+  return recipientHelper.populateRecipients(engine)
     .then(() => {
       res.redirect('/')
     })
@@ -65,7 +65,7 @@ router.get('/slurpe', function(req, res){
 })
 
 router.get('/slurps', function(req, res){
-  return recipientHelper.populateRecipients(engine)
+  return recipientHelper.populateSmsRecipients(engine)
     .then(() => {
       res.redirect('/')
     })
