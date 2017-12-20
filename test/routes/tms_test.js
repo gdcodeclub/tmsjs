@@ -141,6 +141,20 @@ describe('routes', () => {
       })
   })
 
+  it('should show the new sms form', (done) => {
+    agent
+      .get('/news')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Message Body')
+        res.text.should.contain('Recipients')
+        res.text.should.contain('Send Message')
+        nock.isDone().should.be.true
+
+        done()
+      })
+  })
+
   it ('should populate local store with email recipient data', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email')

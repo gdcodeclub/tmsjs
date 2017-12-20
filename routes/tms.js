@@ -53,6 +53,10 @@ router.get('/newe', function(req, res){
   res.render('../views/new_email_message')
 })
 
+router.get('/news', function(req, res){
+  res.render('../views/new_sms_message')
+})
+
 router.get('/slurpe', function(req, res){
   return recipientHelper.populateRecipients(engine)
     .then(() => {
