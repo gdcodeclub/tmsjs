@@ -1,5 +1,6 @@
 const Download = require('../models/download')
 const Email = require('../models/email')
+const Sms = require('../models/sms')
 const Recipient = require('../models/recipient')
 module.exports = {
 
@@ -31,9 +32,26 @@ module.exports = {
   },
 
   /**
+   * get SMS messages from TMS
+   * returns SMS message objects translated to TMSJS
+   * for example, the TMS API exposes an attribute called "id"
+   * that TMSJS refers to as "messageId"
+   */
+  getSmsMessageData: function(engine) {
+    return engine
+      .get('/messages/sms')
+      .then(function(result){
+        return result.data.map((sms) => {
+          console.log('jjjjjj', sms)
+          return { messageId: sms.id, body: sms.body, date: sms.created_at }
+        })
+      })
+  },
+
+  /**
    * externally called function
-   * * gets all messages for an account
-   * * persists all messages
+   * * gets all email messages for an account
+   * * persists all email messages
    * * persists all recipients for these messages
    */
   populateRecipients: function(engine) {
@@ -44,6 +62,32 @@ module.exports = {
       })
       .then(function(messageData) {
         return module.exports.saveMessageRecipients(engine, messageData)
+      })
+      .then(function(recipientData) {
+        const dl = new Download({date: new Date()})
+        dl.save(err => {
+          if (err) {
+            module.exports.log('ERROR SAVING DOWNLOAD DATA', err)
+          }
+        })
+        return recipientData
+      })
+  },
+
+  /**
+   * externally called function
+   * * gets all sms messages for an account
+   * * persists all sms messages
+   * * persists all recipients for these messages
+   */
+  populateSmsRecipients: function(engine) {
+    return module.exports.getSmsMessageData(engine)
+      .then(function(messageData) {
+        module.exports.saveSmsMessages(messageData)
+        return messageData
+      })
+      .then(function(messageData) {
+        return module.exports.saveSmsMessageRecipients(engine, messageData)
       })
       .then(function(recipientData) {
         const dl = new Download({date: new Date()})
@@ -77,6 +121,27 @@ module.exports = {
       })
 
       return Email.update(query, data, {upsert: true}, function(err) {
+        if (err) {
+          module.exports.log('ERROR SAVING MESSAGE ' + query.messageId, err)
+        }
+      })
+    })
+  },
+
+  /**
+   * persist SMS messages
+   * if record exists, update it; if not, insert it
+   */
+  getSaveSmsMessagePromises: function (messages) {
+    return [].concat(...messages).map((message) => {
+      console.log('hhhhh', message)
+      const query = {messageId: message.messageId}
+      const data = Object.assign({}, query, {
+        body: message.body,
+        date: message.date
+      })
+
+      return Sms.update(query, data, {upsert: true}, function(err) {
         if (err) {
           module.exports.log('ERROR SAVING MESSAGE ' + query.messageId, err)
         }
@@ -124,7 +189,26 @@ module.exports = {
     })
   },
 
+  // need to test cover
   saveMessageRecipients: function (engine, messageData) {
+    const getRecipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
+    return Promise.all(getRecipientPromises)
+      .then(result => {
+        return result
+      })
+      .then(function(recipients) {
+        return recipients.map((rdata) => {
+          return rdata.data
+        })
+      })
+      .then(function(rdata) {
+        const savePromises = module.exports.getSaveRecipientPromises(rdata)
+        return module.exports.executePromises(savePromises)
+      })
+  },
+
+  // need to test cover
+  saveSmsMessageRecipients: function (engine, messageData) {
     const getRecipientPromises = module.exports.getGetRecipientPromises(engine, messageData)
     return Promise.all(getRecipientPromises)
       .then(result => {
@@ -143,6 +227,11 @@ module.exports = {
 
   saveMessages: function (messageData) {
     const messagePromises = module.exports.getSaveMessagePromises(messageData)
+    return module.exports.executePromises(messagePromises)
+  },
+
+  saveSmsMessages: function (messageData) {
+    const messagePromises = module.exports.getSaveSmsMessagePromises(messageData)
     return module.exports.executePromises(messagePromises)
   },
 
