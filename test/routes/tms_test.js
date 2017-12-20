@@ -169,6 +169,34 @@ describe('routes', () => {
       })
   })
 
+  it ('should populate local store with sms recipient data', (done) => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/sms')
+      .reply(200, [{'id': 1, 'body': 'first sms', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
+    const second = nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients')
+      .reply(200, [{'sms': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
+                   {'sms': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+    const third = nock(process.env.TMS_URL)
+      .get('/messages/sms/2/recipients')
+      .reply(200, [{'sms': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
+                   {'sms': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+
+    agent
+      .get('/slurps')
+      .then(res => {
+        res.should.have.status(302)
+        first.isDone().should.be.true
+        second.isDone().should.be.true
+        third.isDone().should.be.true
+
+        done()
+      }).catch(function(err) {
+        return done(err)
+      })
+  })
+
   it('should handle error', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email')
