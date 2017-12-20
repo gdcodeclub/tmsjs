@@ -24,4 +24,4 @@ services:
       - ./data.db:/data/db
     ports:
       - 27017:27017
-    command: mongod --smallfiles --logpath /var/log/mongodb/mongo.log
+    command: mongod --smallfiles --logpath /var/log/mongodb/mongo.log --bind_ip=0.0.0.0
