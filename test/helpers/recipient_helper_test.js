@@ -49,6 +49,29 @@ describe ('recipient_helper', () => {
       .should.become(['done1', 'done2', 'done3'])
   })
 
+  it ('should read last download date (readLastDownloadDate)', () => {
+    const date = new Date().toString()
+    const rec = new Download({
+      date: date
+    })
+    const savePromise = rec.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    return savePromise
+      .then(res => {
+        res.date.should.equal(rec.date)
+      })
+      .then(() => {
+        return recipientHelper.readLastDownloadDate()
+          .then(dlDate => {
+            dlDate.date.should.equal(rec.date)
+          })
+      })
+  })
+
   it ('should get message ids (getMessageData)', () => {
     nock(process.env.TMS_URL)
       .get('/messages/email')

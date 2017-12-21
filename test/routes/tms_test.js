@@ -26,6 +26,62 @@ describe('routes', () => {
       })
   })
 
+  it('should display home when no download date', (done) => {
+    agent
+      .get('/')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Download data from Granicus')
+        res.text.should.not.contain('Last download')
+        done()
+      })
+  })
+
+  it ('should show email message', (done) => {
+    const messageData = {subject: 'retrieved message subject',
+                         body: 'retrieved message body',
+                         status: 'sending',
+                         created_at: '2017-05-30T12:54:51Z',
+                         recipient_counts: {'total': 3}}
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1')
+      .reply(200, messageData )
+
+    agent
+      .get('/e/1')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain(messageData.subject)
+        res.text.should.contain(messageData.status)
+        res.text.should.contain('total')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
+  it ('should show sms message', (done) => {
+    const messageData = {body: 'retrieved message body',
+                         status: 'sending',
+                         created_at: '2017-05-30T12:54:51Z',
+                         recipient_counts: {'total': 3}}
+    nock(process.env.TMS_URL)
+      .get('/messages/sms/1')
+      .reply(200, messageData )
+
+    agent
+      .get('/s/1')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain(messageData.body)
+        res.text.should.contain(messageData.status)
+        res.text.should.contain('total')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
   it('should show from addresses', (done) => {
     nock(process.env.TMS_URL)
       .get('/from_addresses')
@@ -368,18 +424,29 @@ describe('routes', () => {
       })
   })
 
-  it ('should show search page', (done) => {
+  it ('should show email search page', (done) => {
     agent
       .get('/search_recipients')
       .end((req, res) => {
         res.should.have.status(200)
-        res.text.should.contain('Search Recipients')
+        res.text.should.contain('Search Email Recipients')
 
         done()
       })
   })
 
-  describe ('search recipients', () => {
+  it ('should show sms search page', (done) => {
+    agent
+      .get('/search_sms_recipients')
+      .end((req, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Search SMS Recipients')
+
+        done()
+      })
+  })
+
+  describe ('search for recipients', () => {
     beforeEach(function() {
       const email1 = new Email({
         subject: 'A fine mailing',
