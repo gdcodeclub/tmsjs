@@ -379,18 +379,29 @@ describe('routes', () => {
       })
   })
 
-  it ('should show search page', (done) => {
+  it ('should show email search page', (done) => {
     agent
       .get('/search_recipients')
       .end((req, res) => {
         res.should.have.status(200)
-        res.text.should.contain('Search Recipients')
+        res.text.should.contain('Search Email Recipients')
 
         done()
       })
   })
 
-  describe ('search recipients', () => {
+  it ('should show sms search page', (done) => {
+    agent
+      .get('/search_sms_recipients')
+      .end((req, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Search SMS Recipients')
+
+        done()
+      })
+  })
+
+  describe ('search for recipients', () => {
     beforeEach(function() {
       const email1 = new Email({
         subject: 'A fine mailing',
