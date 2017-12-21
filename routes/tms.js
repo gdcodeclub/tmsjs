@@ -53,8 +53,23 @@ router.get('/newe', function(req, res){
   res.render('../views/new_email_message')
 })
 
+router.get('/news', function(req, res){
+  res.render('../views/new_sms_message')
+})
+
 router.get('/slurpe', function(req, res){
   return recipientHelper.populateRecipients(engine)
+    .then(() => {
+      res.redirect('/')
+    })
+    .catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
+})
+
+router.get('/slurps', function(req, res){
+  return recipientHelper.populateSmsRecipients(engine)
     .then(() => {
       res.redirect('/')
     })
@@ -86,10 +101,38 @@ router.post('/', function(req, res){
     })
 })
 
+router.post('/sms', function(req, res){
+  const recipients = []
+  req.body['recipients'].split(',').map((phone) => {
+    recipients.push({ phone: phone })
+  })
+
+  const sms_message = {
+    body: req.body['body'],
+    recipients: recipients
+  }
+
+  return engine
+    .post('/messages/sms', sms_message)
+    .then(() => {
+      res.redirect('/s')
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
+})
+
 router.get('/saved_messages', function(req, res){
   recipientHelper.readMessages()
     .then(function(messages) {
       res.render('../views/email_messages', {data: messages})
+    })
+})
+
+router.get('/saved_sms_messages', function(req, res){
+  recipientHelper.readSmsMessages()
+    .then(function(messages) {
+      res.render('../views/sms_messages', {data: messages})
     })
 })
 
@@ -98,6 +141,17 @@ router.get('/e/:message_id', function(req, res){
     .get('/messages/email/' + req.params.message_id)
     .then(function(result){
       res.render('../views/email_message', {data: result.data})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
+      res.redirect('/')
+    })
+})
+
+router.get('/s/:message_id', function(req, res){
+  return engine
+    .get('/messages/sms/' + req.params.message_id)
+    .then(function(result){
+      res.render('../views/sms_message', {data: result.data})
     }).catch(function(error){
       recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
       res.redirect('/')

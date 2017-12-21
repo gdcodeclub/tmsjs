@@ -1,25 +1,6 @@
 <% include partials/header%>
 <% include partials/navbar%>
   <div class="container">
-    <div class="page-header">
-      <h1>SMS Messages</h1>
-    </div>
-
-    <div class="panel panel-default">
-      <table class="table">
-        <tr>
-          <th>TMS ID</th>
-          <th>Date Sent</th>
-          <th>Body</th>
-        </tr>
-        <% data.map(function(d){ %>
-          <tr>
-            <td><%= d.messageId %></td>
-            <td><%= d.date %></td>
-            <td><%= d.body %></td>
-          </tr>
-        <%})%>
-      </div>
-    </div>
+    <% include partials/sms_messages%>
   </div>
 <% include partials/footer%>

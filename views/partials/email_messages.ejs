@@ -1,0 +1,24 @@
+<div class="page-header">
+  <h1>Email Messages</h1>
+</div>
+
+<div class="panel panel-default">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th>TMS ID</th>
+        <th>Date Sent</th>
+        <th>Subject</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% data.map(function(d){ %>
+        <tr onclick="location.href='/e/<%= d.messageId %>'" style="cursor: pointer;">
+          <td><%= d.messageId %></td>
+          <td><%= d.date %></td>
+          <td><%= d.subject %></td>
+        </a></tr>
+      <%})%>
+    </tbody>
+  </div>
+</div>

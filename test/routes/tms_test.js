@@ -11,6 +11,7 @@ const should = chai.should()
 const recipientHelper = require('../../helpers/recipient_helper')
 const Email = require('../../models/email')
 const Recipient = require('../../models/recipient')
+const Sms = require('../../models/sms')
 
 chai.use(chaiHttp)
 
@@ -18,7 +19,10 @@ describe('routes', () => {
   beforeEach(function() {
     return Email.remove({})
       .then(() => {
-        return Recipient.remove({})
+        return Sms.remove({})
+          .then(() => {
+            return Recipient.remove({})
+          })
       })
   })
 
@@ -141,6 +145,20 @@ describe('routes', () => {
       })
   })
 
+  it('should show the new sms form', (done) => {
+    agent
+      .get('/news')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Message Body')
+        res.text.should.contain('Recipients')
+        res.text.should.contain('Send Message')
+        nock.isDone().should.be.true
+
+        done()
+      })
+  })
+
   it ('should populate local store with email recipient data', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email')
@@ -166,6 +184,30 @@ describe('routes', () => {
         done()
       }).catch(function(err) {
         return done(err)
+      })
+  })
+
+  it ('should populate local store with sms recipient data', () => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/sms')
+      .reply(200, [{'id': 1, 'body': 'first sms', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
+    const second = nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients')
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+    const third = nock(process.env.TMS_URL)
+      .get('/messages/sms/2/recipients')
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+
+    return agent
+      .get('/slurps')
+      .then(res => {
+        res.should.have.status(302)
+        first.isDone().should.be.true
+        second.isDone().should.be.true
+        third.isDone().should.be.true
       })
   })
 
@@ -245,7 +287,39 @@ describe('routes', () => {
       })
   })
 
-  it('should show saved email messages', (done) => {
+  it('should post sms message', (done) => {
+    const mockData = {
+      body: 'Hi!',
+      recipients: [{phone:'16515551212'},{phone: '16515557878'}]
+    }
+
+    const mockResponse = {
+      'id': 8675309,
+      'body': 'Hi!'
+    }
+
+    nock(process.env.TMS_URL)
+      .post('/messages/sms', mockData)
+      .reply(200, mockResponse)
+
+    const message = {
+      body: 'Hi!',
+      recipients: '16515551212,16515557878'
+    }
+
+    agent
+      .post('/sms')
+      .type('form')
+      .send(message)
+      .end((err, res) => {
+        res.should.have.status(302)
+        nock.isDone().should.be.true
+
+        done(err)
+      })
+  })
+
+  it ('should show saved email messages', (done) => {
     const message = new Email({
       subject: 'Hello!',
       body: 'Hi!'
@@ -265,6 +339,30 @@ describe('routes', () => {
         res.text.should.contain('Date Sent')
         res.text.should.contain('Subject')
         res.text.should.contain('Hello!')
+
+        done()
+      })
+  })
+
+  it ('should show saved email and messages', (done) => {
+    const sms = new Sms({
+      body: 'Cool SMS!'
+    })
+    sms.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + sms + "\n" + err)
+      }
+    })
+
+    agent
+      .get('/saved_sms_messages')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('SMS Messages')
+        res.text.should.contain('TMS ID')
+        res.text.should.contain('Date Sent')
+        res.text.should.contain('Body')
+        res.text.should.contain('Cool SMS!')
 
         done()
       })
