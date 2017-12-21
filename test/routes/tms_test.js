@@ -37,6 +37,51 @@ describe('routes', () => {
       })
   })
 
+  it ('should show email message', (done) => {
+    const messageData = {subject: 'retrieved message subject',
+                         body: 'retrieved message body',
+                         status: 'sending',
+                         created_at: '2017-05-30T12:54:51Z',
+                         recipient_counts: {'total': 3}}
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1')
+      .reply(200, messageData )
+
+    agent
+      .get('/e/1')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain(messageData.subject)
+        res.text.should.contain(messageData.status)
+        res.text.should.contain('total')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
+  it ('should show sms message', (done) => {
+    const messageData = {body: 'retrieved message body',
+                         status: 'sending',
+                         created_at: '2017-05-30T12:54:51Z',
+                         recipient_counts: {'total': 3}}
+    nock(process.env.TMS_URL)
+      .get('/messages/sms/1')
+      .reply(200, messageData )
+
+    agent
+      .get('/s/1')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain(messageData.body)
+        res.text.should.contain(messageData.status)
+        res.text.should.contain('total')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
   it('should show from addresses', (done) => {
     nock(process.env.TMS_URL)
       .get('/from_addresses')
