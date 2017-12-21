@@ -412,10 +412,45 @@ describe('routes', () => {
         }
       })
 
-      return Promise.all([saveEmailPromise1, saveRecipientPromise1, saveRecipientPromise2])
+
+      const sms1 = new Sms({
+        body: 'An SMS for the ages',
+        date: new Date().toString(),
+        messageId: 1003
+      })
+      const saveSmsPromise = sms1.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + email1.subject, err)
+        }
+      })
+
+      const recipient3 = new Recipient({
+        messageId: 1003,
+        phone: '16515551212'
+      })
+      const saveSmsRecipientPromise = recipient3.save(err => {
+        if(err) {
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      return Promise.all([saveEmailPromise1, saveRecipientPromise1, saveRecipientPromise2, saveSmsPromise, saveSmsRecipientPromise])
     })
 
-    it ('should search for recipients', (done) => {
+    it ('should search for sms recipients', (done) => {
+      agent
+        .get('/searchs')
+        .type('form')
+        .query({phone: '16515551212'})
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('<td>1003</td>')
+
+          done(err)
+        })
+    })
+
+    it ('should search for email recipients', (done) => {
       agent
         .get('/searche')
         .type('form')
@@ -428,7 +463,7 @@ describe('routes', () => {
         })
     })
 
-    it ('should search for recipients when multiple returned', (done) => {
+    it ('should search for email recipients when multiple returned', (done) => {
       agent
         .get('/searche')
         .type('form')

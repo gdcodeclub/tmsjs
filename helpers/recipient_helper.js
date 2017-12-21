@@ -280,8 +280,29 @@ module.exports = {
       })
   },
 
+  findSmsRecipients: function (phone) {
+    return Recipient.find({phone: { $regex: '.*' + phone + '.*' }})
+      .sort({messageId: 'asc', phone: 'asc'})
+      .exec((err, recipients) => {
+        if (err) {
+          module.exports.log('ERROR FINDING RECIPIENTS:' + phone, err)
+        }
+        return recipients
+      })
+  },
+
   findMessage: function (messageId) {
     return Email.findOne({messageId: messageId})
+      .exec((err, message) => {
+        if (err) {
+          module.exports.log('ERROR FINDING MESSAGE: ' + messageId, err)
+        }
+        return message
+      })
+  },
+
+  findSmsMessage: function (messageId) {
+    return Sms.findOne({messageId: messageId})
       .exec((err, message) => {
         if (err) {
           module.exports.log('ERROR FINDING MESSAGE: ' + messageId, err)
@@ -295,6 +316,15 @@ module.exports = {
       return module.exports.findMessage(recipient.messageId)
         .then(message => {
           return Object.assign({email: recipient.email, messageId: recipient.messageId}, {date: message.date, subject: message.subject})
+        })
+    })
+  },
+
+  decorateSmsRecipients: function(recipients) {
+    return recipients.map((recipient) => {
+      return module.exports.findSmsMessage(recipient.messageId)
+        .then(message => {
+          return Object.assign({phone: recipient.phone, messageId: recipient.messageId}, {date: message.date, body: message.body})
         })
     })
   },

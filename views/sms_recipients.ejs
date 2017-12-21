@@ -1,0 +1,36 @@
+<% include partials/header%>
+<% include partials/navbar%>
+<% const unique = [...new Set(data.map(r => r.phone))] %>
+  <div class="container">
+    <div class="page-header">
+      <h1>SMS Messages for <%= unique.join(', ') %></h1>
+    </div>
+
+    <div class="panel panel-default">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>TMS ID</th>
+            <th>Date Sent</th>
+            <th>Body</th>
+            <% if (unique.length > 1 ){ %>
+              <th>Phone</th>
+            <% } %>
+          </tr>
+        </thead>
+        <tbody>
+          <% data.map(function(d){ %>
+            <tr onclick="location.href='/s/<%= d.messageId %>'" style="cursor: pointer;">
+              <td><%= d.messageId %></td>
+              <td><%= d.date %></td>
+              <td><%= d.body %></td>
+              <% if (unique.length > 1){ %>
+                <td><%= d.phone %></td>
+              <% } %>
+            </a></tr>
+          <%})%>
+        </tbody>
+      </div>
+    </div>
+  </div>
+<% include partials/footer%>
