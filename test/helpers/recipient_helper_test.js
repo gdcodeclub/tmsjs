@@ -179,7 +179,7 @@ describe ('recipient_helper', () => {
       })
   })
 
-  it ('should read records from database (readMessages)', () => {
+  it ('should email read records from database (readMessages)', () => {
     const date = new Date().toString()
     const rec = new Email({
       subject: 'A fine mailing',
@@ -202,6 +202,34 @@ describe ('recipient_helper', () => {
             const message = messages[messages.length - 1]
             message.date.should.equal(rec.date)
             message.subject.should.equal(rec.subject)
+            message.messageId.should.equal(rec.messageId)
+          })
+      })
+  })
+
+  it ('should read SMS records from database (readSmsMessages)', () => {
+    const date = new Date().toString()
+    const rec = new Sms({
+      body: 'A fine sms',
+      date: date,
+      messageId: 1001
+    })
+    const savePromise = rec.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    return savePromise
+      .then(res => {
+        res.date.should.equal(rec.date)
+      })
+      .then(() => {
+        return recipientHelper.readSmsMessages()
+          .then(messages => {
+            const message = messages[messages.length - 1]
+            message.date.should.equal(rec.date)
+            message.body.should.equal(rec.body)
             message.messageId.should.equal(rec.messageId)
           })
       })

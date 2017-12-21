@@ -11,6 +11,7 @@ const should = chai.should()
 const recipientHelper = require('../../helpers/recipient_helper')
 const Email = require('../../models/email')
 const Recipient = require('../../models/recipient')
+const Sms = require('../../models/sms')
 
 chai.use(chaiHttp)
 
@@ -18,7 +19,10 @@ describe('routes', () => {
   beforeEach(function() {
     return Email.remove({})
       .then(() => {
-        return Recipient.remove({})
+        return Sms.remove({})
+          .then(() => {
+            return Recipient.remove({})
+          })
       })
   })
 
@@ -315,7 +319,7 @@ describe('routes', () => {
       })
   })
 
-  it('should show saved email messages', (done) => {
+  it ('should show saved email messages', (done) => {
     const message = new Email({
       subject: 'Hello!',
       body: 'Hi!'
@@ -335,6 +339,30 @@ describe('routes', () => {
         res.text.should.contain('Date Sent')
         res.text.should.contain('Subject')
         res.text.should.contain('Hello!')
+
+        done()
+      })
+  })
+
+  it ('should show saved email and messages', (done) => {
+    const sms = new Sms({
+      body: 'Cool SMS!'
+    })
+    sms.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + sms + "\n" + err)
+      }
+    })
+
+    agent
+      .get('/saved_sms_messages')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('SMS Messages')
+        res.text.should.contain('TMS ID')
+        res.text.should.contain('Date Sent')
+        res.text.should.contain('Body')
+        res.text.should.contain('Cool SMS!')
 
         done()
       })

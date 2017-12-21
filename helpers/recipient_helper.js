@@ -155,11 +155,21 @@ module.exports = {
     })
   },
 
-  /** read messages from database */
+  /** read email messages from database */
   readMessages: function() {
     return Email.find(function(err, messages){
       if (err) {
-        module.exports.log('error retrieving messages from database', err)
+        module.exports.log('error retrieving email messages from database', err)
+      }
+      return messages
+    })
+  },
+
+  /** read SMS messages from database */
+  readSmsMessages: function() {
+    return Sms.find(function(err, messages){
+      if (err) {
+        module.exports.log('error retrieving SMS messages from database', err)
       }
       return messages
     })
