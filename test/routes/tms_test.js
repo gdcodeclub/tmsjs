@@ -26,6 +26,17 @@ describe('routes', () => {
       })
   })
 
+  it('should display home when no download date', (done) => {
+    agent
+      .get('/')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('Download data from Granicus')
+        res.text.should.not.contain('Last download')
+        done()
+      })
+  })
+
   it('should show from addresses', (done) => {
     nock(process.env.TMS_URL)
       .get('/from_addresses')
