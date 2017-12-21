@@ -235,7 +235,7 @@ describe ('recipient_helper', () => {
       })
   })
 
-  describe('recipient search', () => {
+  describe('email recipient search', () => {
     beforeEach(() => {
       const email1 = new Email({
         subject: 'A fine mailing',
@@ -292,7 +292,7 @@ describe ('recipient_helper', () => {
       return Promise.all([saveEmailPromise1, saveEmailPromise2, saveRecipientPromise1, saveRecipientPromise2, saveRecipientPromise3])
     })
 
-    it ('should search for recipients', () => {
+    it ('should search for email recipients (findRecipients)', () => {
       return recipientHelper.findRecipients('first@example.com')
         .then((records) => {
           records.should.have.lengthOf(1)
@@ -302,7 +302,7 @@ describe ('recipient_helper', () => {
         })
     })
 
-    it ('should search for recipients wildcard', () => {
+    it ('should search for email recipients wildcard', () => {
       return recipientHelper.findRecipients('example')
         .then((records) => {
           records.should.have.lengthOf(3)
@@ -316,7 +316,7 @@ describe ('recipient_helper', () => {
         })
     })
 
-    it ('should decorate recipients', () => {
+    it ('should decorate email recipients', () => {
       const decorated = recipientHelper.decorateRecipients(
         [{ _id: '5a198c1ac812633725a5bbb9',
           messageId: '1001',
@@ -330,6 +330,103 @@ describe ('recipient_helper', () => {
           res[0].date.should.not.be.null
         })
 
+    })
+  })
+
+  describe('SMS recipient search', () => {
+    beforeEach(() => {
+      const sms1 = new Sms({
+        body: 'A fine message',
+        date: new Date().toString(),
+        messageId: 1001
+      })
+      const saveSmsPromise1 = sms1.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + sms1.body, err)
+        }
+      })
+
+      const sms2 = new Sms({
+        body: 'A better message',
+        date: new Date().toString(),
+        messageId: 1002
+      })
+      const saveSmsPromise2 = sms2.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + email2.body, err)
+        }
+      })
+
+      const recipient1 = new Recipient({
+        messageId: 1001,
+        phone: '16515551212'
+      })
+      const saveRecipientPromise1 = recipient1.save(err => {
+        if(err) {
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      const recipient2 = new Recipient({
+        messageId: 1001,
+        phone: '16515557878'
+      })
+      const saveRecipientPromise2 = recipient2.save(err => {
+        if(err) {
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      const recipient3 = new Recipient({
+        messageId: 1002,
+        phone: '16515557878'
+      })
+      const saveRecipientPromise3 = recipient3.save(err => {
+        if(err) {
+          recipientHelper.log('ERROR SAVING RECIPIENT', err)
+        }
+      })
+
+      return Promise.all([saveSmsPromise1, saveSmsPromise2, saveRecipientPromise1, saveRecipientPromise2, saveRecipientPromise3])
+    })
+
+    it ('should search for sms recipients (findSmsRecipients)', () => {
+      return recipientHelper.findSmsRecipients('16515551212')
+        .then((records) => {
+          records.should.have.lengthOf(1)
+
+          records[0].messageId.should.equal('1001')
+          records[0].phone.should.equal('16515551212')
+        })
+    })
+
+    it ('should search for sms recipients wildcard', () => {
+      return recipientHelper.findSmsRecipients('651')
+        .then((records) => {
+          records.should.have.lengthOf(3)
+
+          records[0].messageId.should.equal('1001')
+          records[0].phone.should.equal('16515551212')
+          records[1].messageId.should.equal('1001')
+          records[1].phone.should.equal('16515557878')
+          records[2].messageId.should.equal('1002')
+          records[2].phone.should.equal('16515557878')
+        })
+    })
+
+    it ('should decorate sms recipients', () => {
+      const decorated = recipientHelper.decorateSmsRecipients(
+        [{ _id: '5a198c1ac812633725a5bbb9',
+          messageId: '1001',
+          phone: '16515557878',
+          __v: 0 }])
+      return Promise.all(decorated)
+        .then(res => {
+          res[0].messageId.should.equal('1001')
+          res[0].phone.should.equal('16515557878')
+          res[0].body.should.equal('A fine message')
+          res[0].date.should.not.be.null
+        })
     })
   })
 
