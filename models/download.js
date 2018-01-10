@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const DownloadSchema = new mongoose.Schema({
-  date: String
+  date: Date
 })
 
 module.exports = mongoose.model('Download', DownloadSchema)

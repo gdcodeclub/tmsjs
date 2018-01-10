@@ -50,7 +50,7 @@ describe ('recipient_helper', () => {
   })
 
   it ('should read last download date (readLastDownloadDate)', () => {
-    const date = new Date().toString()
+    const date = new Date()
     const rec = new Download({
       date: date
     })
@@ -62,12 +62,12 @@ describe ('recipient_helper', () => {
 
     return savePromise
       .then(res => {
-        res.date.should.equal(rec.date)
+        res.date.toString().should.equal(rec.date.toString())
       })
       .then(() => {
         return recipientHelper.readLastDownloadDate()
           .then(dlDate => {
-            dlDate.date.should.equal(rec.date)
+            dlDate.date.toString().should.equal(rec.date.toString())
           })
       })
   })
