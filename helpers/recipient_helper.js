@@ -63,8 +63,11 @@ module.exports = {
         return module.exports.saveMessageRecipients(engine, messageData)
       })
       .then(function(recipientData) {
-        const dl = new Download({date: new Date()})
-        dl.save(err => {
+        const data = Object.assign({}, {}, {
+          date: new Date()
+        })
+
+        Download.update({}, data, {upsert: true}, function(err) {
           if (err) {
             module.exports.log('ERROR SAVING DOWNLOAD DATA', err)
           }
