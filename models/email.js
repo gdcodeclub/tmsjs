@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const EmailSchema = new mongoose.Schema({
   subject: String,
-  date: String,
+  date: Date,
   messageId: String
 })
 

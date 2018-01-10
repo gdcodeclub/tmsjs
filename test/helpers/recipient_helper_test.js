@@ -223,7 +223,7 @@ describe ('recipient_helper', () => {
         return recipientHelper.readMessages()
           .then(messages => {
             const message = messages[messages.length - 1]
-            message.date.should.equal(rec.date)
+            message.date.toString().should.equal(rec.date.toString())
             message.subject.should.equal(rec.subject)
             message.messageId.should.equal(rec.messageId)
           })
@@ -251,7 +251,7 @@ describe ('recipient_helper', () => {
         return recipientHelper.readSmsMessages()
           .then(messages => {
             const message = messages[messages.length - 1]
-            message.date.should.equal(rec.date)
+            message.date.toString().should.equal(rec.date.toString())
             message.body.should.equal(rec.body)
             message.messageId.should.equal(rec.messageId)
           })
