@@ -285,7 +285,7 @@ describe('routes', () => {
       })
   })
 
-  it('should post email message', (done) => {
+  it ('should post email message and then retrieve messages from XACT', (done) => {
     const mockData = {
       subject: 'Hello!',
       body: 'Hi!',
@@ -298,7 +298,7 @@ describe('routes', () => {
       'body': 'Hi!'
     }
 
-    nock(process.env.TMS_URL)
+    const post_call = nock(process.env.TMS_URL)
       .post('/messages/email', mockData)
       .reply(200, mockResponse)
 
@@ -308,13 +308,29 @@ describe('routes', () => {
       recipients: 'first@example.com,second@example.com'
     }
 
+    const get_call_one = nock(process.env.TMS_URL)
+      .get('/messages/email')
+      .reply(200, [{'id': 1, 'subject': 'first email', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
+    const get_call_two = nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients')
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+    const get_call_three = nock(process.env.TMS_URL)
+      .get('/messages/email/2/recipients')
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
     agent
       .post('/')
       .type('form')
       .send(message)
       .end((err, res) => {
         res.should.have.status(302)
-        nock.isDone().should.be.true
+        post_call.isDone().should.be.true
+        get_call_one.isDone().should.be.true
+        get_call_two.isDone().should.be.true
+        get_call_three.isDone().should.be.true
+        res.should.redirectTo('/saved_messages')
 
         done(err)
       })
@@ -343,7 +359,7 @@ describe('routes', () => {
       })
   })
 
-  it('should post sms message', (done) => {
+  it('should post sms message and then retrieve messages from XACT', (done) => {
     const mockData = {
       body: 'Hi!',
       recipients: [{phone:'16515551212'},{phone: '16515557878'}]
@@ -354,7 +370,7 @@ describe('routes', () => {
       'body': 'Hi!'
     }
 
-    nock(process.env.TMS_URL)
+    const post_call = nock(process.env.TMS_URL)
       .post('/messages/sms', mockData)
       .reply(200, mockResponse)
 
@@ -363,13 +379,30 @@ describe('routes', () => {
       recipients: '16515551212,16515557878'
     }
 
+    const get_call_one = nock(process.env.TMS_URL)
+      .get('/messages/sms')
+      .reply(200, [{'id': 1, 'body': 'first sms', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
+    const get_call_two = nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients')
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+    const get_call_three = nock(process.env.TMS_URL)
+      .get('/messages/sms/2/recipients')
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+
     agent
       .post('/sms')
       .type('form')
       .send(message)
       .end((err, res) => {
         res.should.have.status(302)
-        nock.isDone().should.be.true
+        post_call.isDone().should.be.true
+        get_call_one.isDone().should.be.true
+        get_call_two.isDone().should.be.true
+        get_call_three.isDone().should.be.true
+        res.should.redirectTo('/saved_sms_messages')
 
         done(err)
       })

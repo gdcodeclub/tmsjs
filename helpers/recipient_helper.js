@@ -196,6 +196,7 @@ module.exports = {
    */
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
+      console.log('xxxxxxxxgetSaveRecipientPromises', recipient)
       const messageId = recipient._links.email_message.split('/')[3]
       const query = {messageId: messageId, email: recipient.email}
       const data = Object.assign({}, query)
@@ -333,12 +334,12 @@ module.exports = {
   },
 
   /**
-   * when running tests don't fill console with expected errors
+   * when running tests, don't fill console with expected errors
    * for debugging you may want to modify this method temporarily to see full error
    */
   log: function(message, error) {
     if (process.env.TMS_URL == 'https://fake.tms.url.com') {
-      console.log('error would have been logged -- see recipient_helper.log')
+      console.log('error would have been logged -- see recipient_helper\'s log() function')
       return true
     }
     console.log(message, error)

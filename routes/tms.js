@@ -94,8 +94,12 @@ router.post('/', function(req, res){
   return engine
     .post('/messages/email', email_message)
     .then(() => {
-      res.redirect('/saved_messages')
-    }).catch(function(error){
+      return recipientHelper.populateRecipients(engine)
+        .then(() => {
+          res.redirect('/saved_messages')
+        })
+    })
+    .catch(function(error){
       recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
       res.redirect('/')
     })
@@ -115,7 +119,10 @@ router.post('/sms', function(req, res){
   return engine
     .post('/messages/sms', sms_message)
     .then(() => {
-      res.redirect('/saved_sms_messages')
+      return recipientHelper.populateSmsRecipients(engine)
+        .then(() => {
+          res.redirect('/saved_sms_messages')
+        })
     }).catch(function(error){
       recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
       res.redirect('/')
