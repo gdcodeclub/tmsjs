@@ -215,6 +215,50 @@ describe('routes', () => {
       })
   })
 
+  it ('should populate local store with email and sms recipient data', (done) => {
+    const first = nock(process.env.TMS_URL)
+      .get('/messages/email')
+      .reply(200, [{'id': 1, 'subject': 'first email', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
+    const second = nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients')
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+    const third = nock(process.env.TMS_URL)
+      .get('/messages/email/2/recipients')
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+
+    const fourth = nock(process.env.TMS_URL)
+      .get('/messages/sms')
+      .reply(200, [{'id': 1, 'body': 'first sms', 'created_at':'2017-01-30T17:45:27Z' },
+                   {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
+    const fifth = nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients')
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+    const sixth = nock(process.env.TMS_URL)
+      .get('/messages/sms/2/recipients')
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+
+    agent
+      .get('/slurpe')
+      .then(res => {
+        res.should.have.status(302)
+        first.isDone().should.be.true
+        second.isDone().should.be.true
+        third.isDone().should.be.true
+        fourth.isDone().should.be.true
+        fifth.isDone().should.be.true
+        sixth.isDone().should.be.true
+
+        done()
+      }).catch(function(err) {
+        return done(err)
+      })
+  })
+
   it ('should populate local store with email recipient data', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email')

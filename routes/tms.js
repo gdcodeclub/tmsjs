@@ -60,6 +60,9 @@ router.get('/news', function(req, res){
 router.get('/slurpe', function(req, res){
   return recipientHelper.populateRecipients(engine)
     .then(() => {
+      return recipientHelper.populateSmsRecipients(engine)
+    })
+    .then(() => {
       res.redirect('/')
     })
     .catch(function(error){
