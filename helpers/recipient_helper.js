@@ -172,12 +172,14 @@ module.exports = {
 
   /** read SMS messages from database */
   readSmsMessages: function() {
-    return Sms.find(function(err, messages){
-      if (err) {
-        module.exports.log('error retrieving SMS messages from database', err)
-      }
-      return messages
-    })
+    return Sms.find({})
+      .sort({date: 'desc'})
+      .exec((err, messages) => {
+        if (err) {
+          module.exports.log('error retrieving SMS messages from database', err)
+        }
+        return messages
+      })
   },
 
   /** read latest download date from database */

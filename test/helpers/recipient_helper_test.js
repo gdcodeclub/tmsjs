@@ -233,7 +233,7 @@ describe ('recipient_helper', () => {
   it ('should sort email records from database (readMessages)', () => {
     const rec0 = new Email({
       subject: 'First mailing',
-      date: new Date(new Date() - 400000).toString(),
+      date: (new Date() - 400000).toString(),
       messageId: 1
     })
 
@@ -245,7 +245,7 @@ describe ('recipient_helper', () => {
 
     const rec2 = new Email({
       subject: 'An earlier fine mailing',
-      date: new Date(new Date() - 100000).toString(),
+      date: (new Date() - 100000).toString(),
       messageId: 1000
     })
 
@@ -267,7 +267,7 @@ describe ('recipient_helper', () => {
       }
     })
 
-    return Promise.all([savePromise0, savePromise1, savePromise1])
+    return Promise.all([savePromise0, savePromise2, savePromise1])
       .then(res => {
         res.length.should.equal(3)
       })
@@ -305,6 +305,72 @@ describe ('recipient_helper', () => {
             message.date.toString().should.equal(rec.date.toString())
             message.body.should.equal(rec.body)
             message.messageId.should.equal(rec.messageId)
+          })
+      })
+  })
+
+  it ('should sort SMS records from database (readSmsMessages)', () => {
+    const rec0 = new Sms({
+      body: 'First sms',
+      date: (new Date - 100000).toString(),
+      messageId: 2
+    })
+
+    const savePromise0 = rec0.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    const rec1 = new Sms({
+      body: 'A fine sms',
+      date: (new Date() - 10000).toString(),
+      messageId: 3
+    })
+
+    const savePromise1 = rec1.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    const rec2 = new Sms({
+      body: 'A future fine sms',
+      date: new Date().toString(),
+      messageId: 4
+    })
+
+    const savePromise2 = rec2.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    const rec3 = new Sms({
+      body: 'Firster sms',
+      date: (new Date() - 500000).toString(),
+      messageId: 1
+    })
+
+    const savePromise3 = rec3.save(err => {
+      if (err) {
+        recipientHelper.log('ERROR SAVING ' + date, err)
+      }
+    })
+
+    return Promise.all([savePromise3, savePromise0, savePromise2, savePromise1])
+      .then(res => {
+        res.length.should.equal(4)
+      })
+      .then(() => {
+        return recipientHelper.readSmsMessages()
+          .then(messages => {
+
+            console.log('zzzzzzzzz', messages)
+            messages[0].body.should.equal('A future fine sms')
+            messages[1].body.should.equal('A fine sms')
+            messages[2].body.should.equal('First sms')
+            messages[3].body.should.equal('Firster sms')
           })
       })
   })
