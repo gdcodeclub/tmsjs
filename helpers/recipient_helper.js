@@ -160,12 +160,14 @@ module.exports = {
 
   /** read email messages from database */
   readMessages: function() {
-    return Email.find(function(err, messages){
-      if (err) {
-        module.exports.log('error retrieving email messages from database', err)
-      }
-      return messages
-    })
+    return Email.find({})
+      .sort({date: 'desc'})
+      .exec((err, messages) => {
+        if (err) {
+          module.exports.log('error retrieving email messages from database', err)
+        }
+        return messages
+      })
   },
 
   /** read SMS messages from database */
