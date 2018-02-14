@@ -159,9 +159,10 @@ module.exports = {
   },
 
   /** read email messages from database */
-  readMessages: function() {
+  readMessages: function(sort) {
+    const s = typeof sort == 'undefined' ? 'desc' : sort.toLowerCase()
     return Email.find({})
-      .sort({date: 'desc'})
+      .sort({date: s})
       .exec((err, messages) => {
         if (err) {
           module.exports.log('error retrieving email messages from database', err)
@@ -171,9 +172,10 @@ module.exports = {
   },
 
   /** read SMS messages from database */
-  readSmsMessages: function() {
+  readSmsMessages: function(sort) {
+    const s = typeof sort == 'undefined' ? 'desc' : sort.toLowerCase()
     return Sms.find({})
-      .sort({date: 'desc'})
+      .sort({date: s})
       .exec((err, messages) => {
         if (err) {
           module.exports.log('error retrieving SMS messages from database', err)

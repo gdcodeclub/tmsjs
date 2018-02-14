@@ -21,7 +21,7 @@ chai.use(chaiHttp)
 chai.use(chaiAsPromised)
 
 describe ('recipient_helper', () => {
-  beforeEach(function() {
+  beforeEach(() => {
     return Email.remove({})
       .then(() => {
         return Sms.remove({})
@@ -309,70 +309,91 @@ describe ('recipient_helper', () => {
       })
   })
 
-  it ('should sort SMS records from database (readSmsMessages)', () => {
-    const rec0 = new Sms({
-      body: 'First sms',
-      date: (new Date - 100000).toString(),
-      messageId: 2
-    })
-
-    const savePromise0 = rec0.save(err => {
-      if (err) {
-        recipientHelper.log('ERROR SAVING ' + date, err)
-      }
-    })
-
-    const rec1 = new Sms({
-      body: 'A fine sms',
-      date: (new Date() - 10000).toString(),
-      messageId: 3
-    })
-
-    const savePromise1 = rec1.save(err => {
-      if (err) {
-        recipientHelper.log('ERROR SAVING ' + date, err)
-      }
-    })
-
-    const rec2 = new Sms({
-      body: 'A future fine sms',
-      date: new Date().toString(),
-      messageId: 4
-    })
-
-    const savePromise2 = rec2.save(err => {
-      if (err) {
-        recipientHelper.log('ERROR SAVING ' + date, err)
-      }
-    })
-
-    const rec3 = new Sms({
-      body: 'Firster sms',
-      date: (new Date() - 500000).toString(),
-      messageId: 1
-    })
-
-    const savePromise3 = rec3.save(err => {
-      if (err) {
-        recipientHelper.log('ERROR SAVING ' + date, err)
-      }
-    })
-
-    return Promise.all([savePromise3, savePromise0, savePromise2, savePromise1])
-      .then(res => {
-        res.length.should.equal(4)
+  describe ('SMS records from database (readSmsMessages)', () => {
+    beforeEach (() => {
+      const rec0 = new Sms({
+        body: 'First sms',
+        date: (new Date - 100000).toString(),
+        messageId: 2
       })
-      .then(() => {
-        return recipientHelper.readSmsMessages()
-          .then(messages => {
 
-            console.log('zzzzzzzzz', messages)
-            messages[0].body.should.equal('A future fine sms')
-            messages[1].body.should.equal('A fine sms')
-            messages[2].body.should.equal('First sms')
-            messages[3].body.should.equal('Firster sms')
-          })
+      const savePromise0 = rec0.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + date, err)
+        }
       })
+
+      const rec1 = new Sms({
+        body: 'A fine sms',
+        date: (new Date() - 10000).toString(),
+        messageId: 3
+      })
+
+      const savePromise1 = rec1.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + date, err)
+        }
+      })
+
+      const rec2 = new Sms({
+        body: 'A future fine sms',
+        date: new Date().toString(),
+        messageId: 4
+      })
+
+      const savePromise2 = rec2.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + date, err)
+        }
+      })
+
+      const rec3 = new Sms({
+        body: 'Firster sms',
+        date: (new Date() - 500000).toString(),
+        messageId: 1
+      })
+
+      const savePromise3 = rec3.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + date, err)
+        }
+      })
+
+      return Promise.all([savePromise3, savePromise0, savePromise2, savePromise1])
+        .then(res => {
+          res.length.should.equal(4)
+        })
+    })
+
+    it ('default (desc)', () => {
+      return recipientHelper.readSmsMessages()
+        .then(messages => {
+          messages[0].body.should.equal('A future fine sms')
+          messages[1].body.should.equal('A fine sms')
+          messages[2].body.should.equal('First sms')
+          messages[3].body.should.equal('Firster sms')
+        })
+    })
+
+    it ('desc', () => {
+      return recipientHelper.readSmsMessages('DESC')
+        .then(messages => {
+          messages[0].body.should.equal('A future fine sms')
+          messages[1].body.should.equal('A fine sms')
+          messages[2].body.should.equal('First sms')
+          messages[3].body.should.equal('Firster sms')
+        })
+    })
+
+    it ('asc', () => {
+      return recipientHelper.readSmsMessages('ASC')
+        .then(messages => {
+          messages[0].body.should.equal('Firster sms')
+          messages[1].body.should.equal('First sms')
+          messages[2].body.should.equal('A fine sms')
+          messages[3].body.should.equal('A future fine sms')
+        })
+    })
   })
 
   describe('email recipient search', () => {

@@ -6,7 +6,11 @@
   <table class="table table-hover">
     <tr>
       <th>TMS ID</th>
-      <th>Date Sent</th>
+      <% let clazz = sort == 'ASC' ? 'glyphicon glyphicon-arrow-up' : 'glyphicon glyphicon-arrow-down' %>
+      <th id="date_sent_col">
+        <a href="/saved_sms_messages?sort=<%= sort_next %>" class="sorter">Date Sent
+        <span class="<%= clazz %>" aria-hidden="true"></span></a>
+      </th>
       <th>Body</th>
     </tr>
     <% data.map(function(d){ %>
