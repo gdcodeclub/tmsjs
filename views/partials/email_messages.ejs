@@ -7,7 +7,11 @@
     <thead>
       <tr>
         <th>TMS ID</th>
-        <th id="date_sent_col" sort="<%= sort %>"><a href="/saved_messages?sort=<%= sort_next %>">Date Sent</a></th>
+        <% let clazz = sort == 'ASC' ? 'glyphicon glyphicon-arrow-up' : 'glyphicon glyphicon-arrow-down' %>
+        <th id="date_sent_col">
+          <a href="/saved_messages?sort=<%= sort_next %>" class="sorter">Date Sent
+          <span class="<%= clazz %>" aria-hidden="true"></span></a>
+        </th>
         <th>Subject</th>
       </tr>
     </thead>

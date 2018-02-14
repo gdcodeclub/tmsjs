@@ -130,7 +130,6 @@ describe('routes', () => {
         res.text.should.contain('Subject')
         res.text.should.contain('first email')
         res.text.should.contain('second email')
-        res.text.should.contain('sort="DESC"')
         res.text.should.contain('/saved_messages?sort=ASC')
 
         nock.isDone().should.be.true
@@ -154,9 +153,9 @@ describe('routes', () => {
       })
   })
 
-  it('should show sms messages', (done) => {
+  it ('should show sms messages', (done) => {
     nock(process.env.TMS_URL)
-      .get('/messages/sms')
+      .get('/messages/sms?sort_by=created_at&sort_order=DESC')
       .reply(200, [{body: 'welcome to our text'}, {'body': 'sms rulz'}])
 
     agent
@@ -174,7 +173,7 @@ describe('routes', () => {
 
   it('should handle error during show sms messages', (done) => {
     nock(process.env.TMS_URL)
-      .get('/messages/sms')
+      .get('/messages/sms?sort_by=created_at&sort_order=DESC')
       .replyWithError('error')
 
     agent
@@ -454,7 +453,6 @@ describe('routes', () => {
         .get('/saved_messages')
         .end((err, res) => {
           res.should.have.status(200)
-          res.text.should.contain('sort="DESC"')
           res.text.should.contain('/saved_messages?sort=ASC')
 
           done()
@@ -466,7 +464,6 @@ describe('routes', () => {
         .get('/saved_messages?sort=ASC')
         .end((err, res) => {
           res.should.have.status(200)
-          res.text.should.contain('sort="ASC"')
           res.text.should.contain('/saved_messages?sort=DESC')
 
           done()
@@ -478,7 +475,6 @@ describe('routes', () => {
         .get('/saved_messages?sort=DESC')
         .end((err, res) => {
           res.should.have.status(200)
-          res.text.should.contain('sort="DESC"')
           res.text.should.contain('/saved_messages?sort=ASC')
 
           done()
@@ -486,28 +482,65 @@ describe('routes', () => {
     })
   })
 
-  it ('should show saved sms messages', (done) => {
-    const sms = new Sms({
-      body: 'Cool SMS!'
-    })
-    sms.save(err => {
-      if (err) {
-        recipientHelper.log('ERROR SAVING ' + sms + "\n" + err)
-      }
-    })
-
-    agent
-      .get('/saved_sms_messages')
-      .end((err, res) => {
-        res.should.have.status(200)
-        res.text.should.contain('SMS Messages')
-        res.text.should.contain('TMS ID')
-        res.text.should.contain('Date Sent')
-        res.text.should.contain('Body')
-        res.text.should.contain('Cool SMS!')
-
-        done()
+  describe ('saved_sms_messages', () => {
+    beforeEach(() => {
+      const sms = new Sms({
+        body: 'Cool SMS!'
       })
+      sms.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + sms + "\n" + err)
+        }
+      })
+    })
+
+    it ('should show saved sms messages', (done) => {
+      agent
+        .get('/saved_sms_messages')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('SMS Messages')
+          res.text.should.contain('TMS ID')
+          res.text.should.contain('Date Sent')
+          res.text.should.contain('Body')
+          res.text.should.contain('Cool SMS!')
+
+          done()
+        })
+    })
+
+    it ('should show saved sms messages with sorting default desc', (done) => {
+      agent
+        .get('/saved_sms_messages')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('/saved_sms_messages?sort=ASC')
+
+          done()
+        })
+    })
+
+    it ('should show saved sms messages with sorting desc', (done) => {
+      agent
+        .get('/saved_sms_messages?sort=DESC')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('/saved_sms_messages?sort=ASC')
+
+          done()
+        })
+    })
+
+    it ('should show saved sms messages with sorting asc', (done) => {
+      agent
+        .get('/saved_sms_messages?sort=ASC')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('/saved_sms_messages?sort=DESC')
+
+          done()
+        })
+    })
   })
 
   it ('should show email search page', (done) => {
