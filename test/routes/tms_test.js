@@ -118,7 +118,7 @@ describe('routes', () => {
 
   it ('should show email messages', (done) => {
     nock(process.env.TMS_URL)
-      .get('/messages/email')
+      .get('/messages/email?sort_by=created_at&sort_order=DESC')
       .reply(200, [{'subject': 'first email'}, {'subject': 'second email'}])
 
     agent
@@ -130,8 +130,8 @@ describe('routes', () => {
         res.text.should.contain('Subject')
         res.text.should.contain('first email')
         res.text.should.contain('second email')
-        res.text.should.contain('sort="d"')
-        res.text.should.contain('/saved_messages?sort=a')
+        res.text.should.contain('sort="DESC"')
+        res.text.should.contain('/saved_messages?sort=ASC')
 
         nock.isDone().should.be.true
         done()
@@ -140,7 +140,7 @@ describe('routes', () => {
 
   it('should handle error during show email messages', (done) => {
     nock(process.env.TMS_URL)
-      .get('/messages/email')
+      .get('/messages/email?sort_by=created_at&sort_order=DESC')
       .replyWithError('error')
 
     agent
@@ -454,8 +454,8 @@ describe('routes', () => {
         .get('/saved_messages')
         .end((err, res) => {
           res.should.have.status(200)
-          res.text.should.contain('sort="d"')
-          res.text.should.contain('/saved_messages?sort=a')
+          res.text.should.contain('sort="DESC"')
+          res.text.should.contain('/saved_messages?sort=ASC')
 
           done()
         })
@@ -463,11 +463,11 @@ describe('routes', () => {
 
     it ('should show saved email messages with sorting asc', (done) => {
       agent
-        .get('/saved_messages?sort=a')
+        .get('/saved_messages?sort=ASC')
         .end((err, res) => {
           res.should.have.status(200)
-          res.text.should.contain('sort="a"')
-          res.text.should.contain('/saved_messages?sort=d')
+          res.text.should.contain('sort="ASC"')
+          res.text.should.contain('/saved_messages?sort=DESC')
 
           done()
         })
@@ -475,11 +475,11 @@ describe('routes', () => {
 
     it ('should show saved email messages with sorting desc', (done) => {
       agent
-        .get('/saved_messages?sort=d')
+        .get('/saved_messages?sort=DESC')
         .end((err, res) => {
           res.should.have.status(200)
-          res.text.should.contain('sort="d"')
-          res.text.should.contain('/saved_messages?sort=a')
+          res.text.should.contain('sort="DESC"')
+          res.text.should.contain('/saved_messages?sort=ASC')
 
           done()
         })

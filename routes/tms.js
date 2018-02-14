@@ -28,10 +28,11 @@ router.get('/fa', function(req, res){
 })
 
 router.get('/m', function(req, res){
+  const sort = typeof req.query.sort == 'undefined' ? 'DESC' : req.query.sort
   return engine
-    .get('/messages/email')
+    .get('/messages/email?sort_by=created_at&sort_order=' + sort)
     .then(function(result){
-      res.render('../views/email_messages', {data: result.data, sort: 'd', sort_next: 'a'})
+      res.render('../views/email_messages', {data: result.data, sort: 'DESC', sort_next: 'ASC'})
     }).catch(function(error){
       recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
       res.redirect('/')
@@ -126,8 +127,8 @@ router.post('/sms', function(req, res){
 })
 
 router.get('/saved_messages', function(req, res){
-  const sort = typeof req.query.sort == 'undefined' ? 'd' : req.query.sort
-  const sort_next = sort == 'a' ? 'd' : 'a'
+  const sort = typeof req.query.sort == 'undefined' ? 'DESC' : req.query.sort
+  const sort_next = sort == 'ASC' ? 'DESC' : 'ASC'
   recipientHelper.readMessages()
     .then(function(messages) {
       res.render('../views/email_messages', {data: messages, sort: sort, sort_next: sort_next})

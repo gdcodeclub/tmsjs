@@ -365,8 +365,6 @@ describe ('recipient_helper', () => {
       .then(() => {
         return recipientHelper.readSmsMessages()
           .then(messages => {
-
-            console.log('zzzzzzzzz', messages)
             messages[0].body.should.equal('A future fine sms')
             messages[1].body.should.equal('A fine sms')
             messages[2].body.should.equal('First sms')
