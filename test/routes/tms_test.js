@@ -116,7 +116,7 @@ describe('routes', () => {
       })
   })
 
-  it('should show email messages', (done) => {
+  it ('should show email messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/email')
       .reply(200, [{'subject': 'first email'}, {'subject': 'second email'}])
@@ -130,6 +130,8 @@ describe('routes', () => {
         res.text.should.contain('Subject')
         res.text.should.contain('first email')
         res.text.should.contain('second email')
+        res.text.should.contain('sort="d"')
+        res.text.should.contain('/saved_messages?sort=a')
 
         nock.isDone().should.be.true
         done()
@@ -419,32 +421,72 @@ describe('routes', () => {
       })
   })
 
-  it ('should show saved email messages', (done) => {
-    const message = new Email({
-      subject: 'Hello!',
-      body: 'Hi!'
-    })
-    message.save(err => {
-      if (err) {
-        recipientHelper.log('ERROR SAVING ' + message + "\n" + err)
-      }
-    })
-
-    agent
-      .get('/saved_messages')
-      .end((err, res) => {
-        res.should.have.status(200)
-        res.text.should.contain('Email Messages')
-        res.text.should.contain('TMS ID')
-        res.text.should.contain('Date Sent')
-        res.text.should.contain('Subject')
-        res.text.should.contain('Hello!')
-
-        done()
+  describe('saved_messages', () => {
+    beforeEach(function() {
+      const message = new Email({
+        subject: 'Hello!',
+        body: 'Hi!'
       })
+      message.save(err => {
+        if (err) {
+          recipientHelper.log('ERROR SAVING ' + message + "\n" + err)
+        }
+      })
+    })
+
+    it ('should show saved email messages', (done) => {
+      agent
+        .get('/saved_messages')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('Email Messages')
+          res.text.should.contain('TMS ID')
+          res.text.should.contain('Date Sent')
+          res.text.should.contain('Subject')
+          res.text.should.contain('Hello!')
+
+          done()
+        })
+    })
+
+    it ('should show saved email messages with sorting default desc', (done) => {
+      agent
+        .get('/saved_messages')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('sort="d"')
+          res.text.should.contain('/saved_messages?sort=a')
+
+          done()
+        })
+    })
+
+    it ('should show saved email messages with sorting asc', (done) => {
+      agent
+        .get('/saved_messages?sort=a')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('sort="a"')
+          res.text.should.contain('/saved_messages?sort=d')
+
+          done()
+        })
+    })
+
+    it ('should show saved email messages with sorting desc', (done) => {
+      agent
+        .get('/saved_messages?sort=d')
+        .end((err, res) => {
+          res.should.have.status(200)
+          res.text.should.contain('sort="d"')
+          res.text.should.contain('/saved_messages?sort=a')
+
+          done()
+        })
+    })
   })
 
-  it ('should show saved email and messages', (done) => {
+  it ('should show saved sms messages', (done) => {
     const sms = new Sms({
       body: 'Cool SMS!'
     })
