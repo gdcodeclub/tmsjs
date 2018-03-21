@@ -87,7 +87,7 @@ router.get('/slurps', function(req, res){
 router.post('/', function(req, res){
   const recipients = []
   req.body['recipients'].split(',').map((email) => {
-    recipients.push({ email: email })
+    recipients.push({ email: email.trim() })
   })
 
   const email_message = {
@@ -109,7 +109,7 @@ router.post('/', function(req, res){
 router.post('/sms', function(req, res){
   const recipients = []
   req.body['recipients'].split(',').map((phone) => {
-    recipients.push({ phone: phone })
+    recipients.push({ phone: phone.trim() })
   })
 
   const sms_message = {
