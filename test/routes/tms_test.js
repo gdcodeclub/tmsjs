@@ -365,6 +365,41 @@ describe('routes', () => {
       })
   })
 
+  it ('should post email message stripping whitespace from emails', (done) => {
+    const mockData = {
+      subject: 'Hello!',
+      body: 'Hi!',
+      recipients: [{email:'first@example.com'},{email: 'second@example.com'}]
+    }
+
+    const mockResponse = {
+      'id': 8675309,
+      'subject': 'Hello!',
+      'body': 'Hi!'
+    }
+
+    nock(process.env.TMS_URL)
+      .post('/messages/email', mockData)
+      .reply(200, mockResponse)
+
+    const message = {
+      subject: 'Hello!',
+      body: 'Hi!',
+      recipients: 'first@example.com, second@example.com'
+    }
+
+    agent
+      .post('/')
+      .type('form')
+      .send(message)
+      .end((err, res) => {
+        res.should.have.status(302)
+        nock.isDone().should.be.true
+
+        done(err)
+      })
+  })
+
   it('should handle error for post email message', (done) => {
     const message = {
       subject: 'Hello!',
@@ -406,6 +441,38 @@ describe('routes', () => {
     const message = {
       body: 'Hi!',
       recipients: '16515551212,16515557878'
+    }
+
+    agent
+      .post('/sms')
+      .type('form')
+      .send(message)
+      .end((err, res) => {
+        res.should.have.status(302)
+        nock.isDone().should.be.true
+
+        done(err)
+      })
+  })
+
+  it ('should post sms message stripping whitespace', (done) => {
+    const mockData = {
+      body: 'Hi!',
+      recipients: [{phone:'16515551212'},{phone: '16515557878'}]
+    }
+
+    const mockResponse = {
+      'id': 8675309,
+      'body': 'Hi!'
+    }
+
+    nock(process.env.TMS_URL)
+      .post('/messages/sms', mockData)
+      .reply(200, mockResponse)
+
+    const message = {
+      body: 'Hi!',
+      recipients: ' 16515551212,16515557878 '
     }
 
     agent
