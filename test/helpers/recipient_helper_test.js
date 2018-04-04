@@ -99,12 +99,12 @@ describe ('recipient_helper', () => {
   it ('should get recipients with message id (getGetRecipientPromises)', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
-                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/22222'}}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
-                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/44444'}}])
 
     const promises = recipientHelper.getGetRecipientPromises(engine, [{messageId: 1, subject: 'subj1', date: '2017-01-30T17:45:27Z'},
                                                                       {messageId: 2, subject: 'subj2', date: '2017-02-30T17:45:27Z'}])
@@ -124,12 +124,12 @@ describe ('recipient_helper', () => {
   it ('should get SMS recipients with message id (getGetSmsRecipientPromises)', (done) => {
     const first = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
-                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/22222'}}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'email': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
-                   {'email': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': '16515551213', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/33333'}},
+                   {'email': '16515557879', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/44444'}}])
 
     const promises = recipientHelper.getGetSmsRecipientPromises(engine, [{messageId: 1, body: 'body1', date: '2017-01-30T17:45:27Z'},
                                                                          {messageId: 2, body: 'body2', date: '2017-02-30T17:45:27Z'}])
@@ -147,8 +147,8 @@ describe ('recipient_helper', () => {
   })
 
   it ('should get save recipients (getSaveRecipientPromises)', (done) => {
-    const recipients = [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
-                        {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}]
+    const recipients = [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                        {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1//recipients/22222'}}]
 
     const promises = recipientHelper.getSaveRecipientPromises(recipients)
     promises.should.have.lengthOf(2)
@@ -599,12 +599,12 @@ describe ('recipient_helper', () => {
                    {'id': 2, 'subject':'subj2', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1'}},
-                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2'}},
-                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/44444'}}])
     const promise = recipientHelper.populateRecipients(engine)
 
     return promise
@@ -628,21 +628,30 @@ describe ('recipient_helper', () => {
       .then(() => {
         return Recipient.findOne({'email': 'r.fong@sink.granicus.com'}, function(err, recipient) {
           recipient.messageId.should.eq('1')
+          recipient.email.should.eq('r.fong@sink.granicus.com')
+          recipient.recipientId.should.eq('11111')
         })
       })
       .then(() => {
         return Recipient.findOne({'email': 'e.ebbesen@sink.granicus.com'}, function(err, recipient) {
           recipient.messageId.should.eq('1')
+          recipient.email.should.eq('e.ebbesen@sink.granicus.com')
+          recipient.recipientId.should.eq('22222')
+
         })
       })
       .then(() => {
         return Recipient.findOne({'email': 'r.fong2@sink.granicus.com'}, function(err, recipient) {
           recipient.messageId.should.eq('2')
+          recipient.email.should.eq('r.fong2@sink.granicus.com')
+          recipient.recipientId.should.eq('33333')
         })
       })
       .then(() => {
         return Recipient.findOne({'email': 'e.ebbesen2@sink.granicus.com'}, function(err, recipient) {
           recipient.messageId.should.eq('2')
+          recipient.email.should.eq('e.ebbesen2@sink.granicus.com')
+          recipient.recipientId.should.eq('44444')
         })
       })
       .then(() => {
@@ -660,12 +669,12 @@ describe ('recipient_helper', () => {
                    {'id': 2, 'body':'sms2', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1'}},
-                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2'}},
-                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2'}}])
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/44444'}}])
     const promise = recipientHelper.populateSmsRecipients(engine)
 
     return promise
@@ -688,22 +697,31 @@ describe ('recipient_helper', () => {
       })
       .then(() => {
         return Recipient.findOne({'phone': '16515551212'}, function(err, recipient) {
+          console.log('xxxxx', recipient)
           recipient.messageId.should.eq('1')
+          recipient.phone.should.eq('16515551212')
+          recipient.recipientId.should.eq('11111')
         })
       })
       .then(() => {
         return Recipient.findOne({'phone': '16515557878'}, function(err, recipient) {
           recipient.messageId.should.eq('1')
+          recipient.phone.should.eq('16515557878')
+          recipient.recipientId.should.eq('22222')
         })
       })
       .then(() => {
         return Recipient.findOne({'phone': '16515551213'}, function(err, recipient) {
           recipient.messageId.should.eq('2')
+          recipient.phone.should.eq('16515551213')
+          recipient.recipientId.should.eq('33333')
         })
       })
       .then(() => {
         return Recipient.findOne({'phone': '16515557879'}, function(err, recipient) {
           recipient.messageId.should.eq('2')
+          recipient.phone.should.eq('16515557879')
+          recipient.recipientId.should.eq('44444')
         })
       })
       .then(() => {

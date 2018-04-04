@@ -223,12 +223,12 @@ describe('routes', () => {
                    {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
-                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
-                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/44444'}}])
 
     const fourth = nock(process.env.TMS_URL)
       .get('/messages/sms')
@@ -236,12 +236,12 @@ describe('routes', () => {
                    {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
     const fifth = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
-                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/22222'}}])
     const sixth = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
-                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/44444'}}])
 
     agent
       .get('/slurpe')
@@ -267,12 +267,12 @@ describe('routes', () => {
                    {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
-                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
-                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/44444'}}])
 
     agent
       .get('/slurpe')
@@ -295,12 +295,12 @@ describe('routes', () => {
                    {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
-                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
-                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/44444'}}])
 
     return agent
       .get('/slurps')
@@ -411,7 +411,7 @@ describe('routes', () => {
       })
   })
 
-  describe ('sending email', () => {
+  describe ('sending sms', () => {
     beforeEach(function() {
       const mockData = {
         body: 'Hi!',

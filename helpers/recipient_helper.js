@@ -203,7 +203,8 @@ module.exports = {
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
       const messageId = recipient._links.email_message.split('/')[3]
-      const query = {messageId: messageId, email: recipient.email}
+      const recipientId = recipient._links.self.split('/')[5]
+      const query = {messageId: messageId, email: recipient.email, recipientId: recipientId}
       const data = Object.assign({}, query)
 
       return Recipient.update(query, data, {upsert: true}, function(err) {
@@ -221,7 +222,8 @@ module.exports = {
   getSaveSmsRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
       const messageId = recipient._links.sms_message.split('/')[3]
-      const query = {messageId: messageId, phone: recipient.phone}
+      const recipientId = recipient._links.self.split('/')[5]
+      const query = {messageId: messageId, phone: recipient.phone, recipientId: recipientId}
       const data = Object.assign({}, query)
 
       return Recipient.update(query, data, {upsert: true}, function(err) {
