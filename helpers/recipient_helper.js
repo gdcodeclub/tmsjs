@@ -326,7 +326,7 @@ module.exports = {
     return recipients.map((recipient) => {
       return module.exports.findMessage(recipient.messageId)
         .then(message => {
-          return Object.assign({email: recipient.email, messageId: recipient.messageId}, {date: message.date, subject: message.subject})
+          return Object.assign({email: recipient.email, messageId: recipient.messageId, recipientId: recipient.recipientId}, {date: message.date, subject: message.subject})
         })
     })
   },
@@ -335,7 +335,7 @@ module.exports = {
     return recipients.map((recipient) => {
       return module.exports.findSmsMessage(recipient.messageId)
         .then(message => {
-          return Object.assign({phone: recipient.phone, messageId: recipient.messageId}, {date: message.date, body: message.body})
+          return Object.assign({phone: recipient.phone, messageId: recipient.messageId, recipientId: recipient.recipientId}, {date: message.date, body: message.body})
         })
     })
   },

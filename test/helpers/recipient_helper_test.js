@@ -422,7 +422,8 @@ describe ('recipient_helper', () => {
 
       const recipient1 = new Recipient({
         messageId: 1001,
-        email: 'first@example.com'
+        email: 'first@example.com',
+        recipientId: 2001
       })
       const saveRecipientPromise1 = recipient1.save(err => {
         if(err) {
@@ -432,7 +433,8 @@ describe ('recipient_helper', () => {
 
       const recipient2 = new Recipient({
         messageId: 1001,
-        email: 'second@example.com'
+        email: 'second@example.com',
+        recipientId: 2002
       })
       const saveRecipientPromise2 = recipient2.save(err => {
         if(err) {
@@ -442,7 +444,8 @@ describe ('recipient_helper', () => {
 
       const recipient3 = new Recipient({
         messageId: 1002,
-        email: 'second@example.com'
+        email: 'second@example.com',
+        recipientId: 2003
       })
       const saveRecipientPromise3 = recipient3.save(err => {
         if(err) {
@@ -460,6 +463,7 @@ describe ('recipient_helper', () => {
 
           records[0].messageId.should.equal('1001')
           records[0].email.should.equal('first@example.com')
+          records[0].recipientId.should.equal('2001')
         })
     })
 
@@ -470,10 +474,13 @@ describe ('recipient_helper', () => {
 
           records[0].messageId.should.equal('1001')
           records[0].email.should.equal('first@example.com')
+          records[0].recipientId.should.equal('2001')
           records[1].messageId.should.equal('1001')
           records[1].email.should.equal('second@example.com')
+          records[1].recipientId.should.equal('2002')
           records[2].messageId.should.equal('1002')
           records[2].email.should.equal('second@example.com')
+          records[2].recipientId.should.equal('2003')
         })
     })
 
@@ -482,12 +489,14 @@ describe ('recipient_helper', () => {
         [{ _id: '5a198c1ac812633725a5bbb9',
           messageId: '1001',
           email: 'second@example.com',
+          recipientId: '2001',
           __v: 0 }])
       return Promise.all(decorated)
         .then(res => {
           res[0].messageId.should.equal('1001')
           res[0].email.should.equal('second@example.com')
           res[0].subject.should.equal('A fine mailing')
+          res[0].recipientId.should.equal('2001')
           res[0].date.should.not.be.null
         })
 
@@ -520,7 +529,8 @@ describe ('recipient_helper', () => {
 
       const recipient1 = new Recipient({
         messageId: 1001,
-        phone: '16515551212'
+        phone: '16515551212',
+        recipientId: 2001
       })
       const saveRecipientPromise1 = recipient1.save(err => {
         if(err) {
@@ -530,7 +540,8 @@ describe ('recipient_helper', () => {
 
       const recipient2 = new Recipient({
         messageId: 1001,
-        phone: '16515557878'
+        phone: '16515557878',
+        recipientId: 2002
       })
       const saveRecipientPromise2 = recipient2.save(err => {
         if(err) {
@@ -540,7 +551,8 @@ describe ('recipient_helper', () => {
 
       const recipient3 = new Recipient({
         messageId: 1002,
-        phone: '16515557878'
+        phone: '16515557878',
+        recipientId: 2003
       })
       const saveRecipientPromise3 = recipient3.save(err => {
         if(err) {
@@ -558,6 +570,7 @@ describe ('recipient_helper', () => {
 
           records[0].messageId.should.equal('1001')
           records[0].phone.should.equal('16515551212')
+          records[0].recipientId.should.equal('2001')
         })
     })
 
@@ -568,10 +581,13 @@ describe ('recipient_helper', () => {
 
           records[0].messageId.should.equal('1001')
           records[0].phone.should.equal('16515551212')
+          records[0].recipientId.should.equal('2001')
           records[1].messageId.should.equal('1001')
           records[1].phone.should.equal('16515557878')
+          records[1].recipientId.should.equal('2002')
           records[2].messageId.should.equal('1002')
           records[2].phone.should.equal('16515557878')
+          records[2].recipientId.should.equal('2003')
         })
     })
 
@@ -580,6 +596,7 @@ describe ('recipient_helper', () => {
         [{ _id: '5a198c1ac812633725a5bbb9',
           messageId: '1001',
           phone: '16515557878',
+          recipientId: '2001',
           __v: 0 }])
       return Promise.all(decorated)
         .then(res => {
@@ -587,6 +604,7 @@ describe ('recipient_helper', () => {
           res[0].phone.should.equal('16515557878')
           res[0].body.should.equal('A fine message')
           res[0].date.should.not.be.null
+          res[0].recipientId.should.equal('2001')
         })
     })
   })
