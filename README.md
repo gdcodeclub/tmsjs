@@ -80,3 +80,8 @@ db.emails.find()
 db.emails.remove({})
 db.recipients.remove({})
 ```
+
+## cURL for testing
+```
+curl -vvv -L -H "X-AUTH-TOKEN: <your_token>" -H "Content-Type: application/json"  https://stage-tms.govdelivery.com/messages/email
+```
