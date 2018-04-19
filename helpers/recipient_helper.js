@@ -204,8 +204,8 @@ module.exports = {
     return [].concat(...recipients).map((recipient) => {
       const messageId = recipient._links.email_message.split('/')[3]
       const recipientId = recipient._links.self.split('/')[5]
-      const query = {messageId: messageId, email: recipient.email, recipientId: recipientId}
-      const data = Object.assign({}, query)
+      const query = { messageId: messageId, email: recipient.email }
+      const data = Object.assign({}, query, { recipientId: recipientId })
 
       return Recipient.update(query, data, {upsert: true}, function(err) {
         if (err) {
@@ -223,8 +223,8 @@ module.exports = {
     return [].concat(...recipients).map((recipient) => {
       const messageId = recipient._links.sms_message.split('/')[3]
       const recipientId = recipient._links.self.split('/')[5]
-      const query = {messageId: messageId, phone: recipient.phone, recipientId: recipientId}
-      const data = Object.assign({}, query)
+      const query = {messageId: messageId, phone: recipient.phone}
+      const data = Object.assign({}, query, { recipientId: recipientId })
 
       return Recipient.update(query, data, {upsert: true}, function(err) {
         if (err) {
