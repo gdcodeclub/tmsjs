@@ -116,6 +116,29 @@ describe('routes', () => {
       })
   })
 
+  it.only ('should show recipient detail', (done) => {
+    const messageData = {'email':'test@example.com',
+                         'macros':null,
+                         'status':'sent',
+                         'created_at':'2016-09-07T17:41:11Z',
+                         'completed_at':'2016-09-07T17:41:41Z',
+                         '_links':{'self':'/messages/email/1/recipients/22','email_message':'/messages/email/1','opens':'/messages/email/1/recipients/22/opens','clicks':'/messages/email/1/recipients/22/clicks'}
+                         }
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients/22')
+      .reply(200, messageData )
+
+    agent
+      .get('/e/1/r/22')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('sent')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
   it ('should show email messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/email?sort_by=created_at&sort_order=DESC')

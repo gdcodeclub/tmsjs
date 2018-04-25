@@ -201,5 +201,17 @@ router.get('/searchs', function(req, res) {
     })
 })
 
+router.get('/e/:messageId/r/:recipientId', function(req, res) {
+  return engine
+    .get('/messages/email/' + req.params.messageId + '/recipients/' + req.params.recipientId)
+    .then(function(result){
+      res.render('../views/recipient', {data: result.data})
+    }).catch(function(error){
+      recipientHelper.log('error getting data from TMS /messages/email/' + req.params.messageId + '/recipients/' + req.params.recipientId, error)
+      res.redirect('/')
+    })
+
+})
+
 
 module.exports = router
