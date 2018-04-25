@@ -116,7 +116,7 @@ describe('routes', () => {
       })
   })
 
-  it.only ('should show recipient detail', (done) => {
+  it ('should show recipient detail', (done) => {
     const messageData = {'email':'test@example.com',
                          'macros':null,
                          'status':'sent',
@@ -648,7 +648,9 @@ describe('routes', () => {
 
       const recipient1 = new Recipient({
         messageId: 1001,
-        email: 'first@example.com'
+        email: 'first@example.com',
+        recipientId: 1111
+
       })
       const saveRecipientPromise1 = recipient1.save(err => {
         if(err) {
@@ -658,7 +660,8 @@ describe('routes', () => {
 
       const recipient2 = new Recipient({
         messageId: 1001,
-        email: 'second@example.com'
+        email: 'second@example.com',
+        recipientId: 2222
       })
       const saveRecipientPromise2 = recipient2.save(err => {
         if(err) {
@@ -680,7 +683,8 @@ describe('routes', () => {
 
       const recipient3 = new Recipient({
         messageId: 1003,
-        phone: '16515551212'
+        phone: '16515551212',
+        recipientId: 3333
       })
       const saveSmsRecipientPromise = recipient3.save(err => {
         if(err) {
@@ -712,6 +716,7 @@ describe('routes', () => {
         .end((err, res) => {
           res.should.have.status(200)
           res.text.should.contain('<td>1001</td>')
+          res.text.should.contain("location.href='/e/1001/r/1111'")
 
           done(err)
         })
