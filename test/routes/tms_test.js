@@ -128,11 +128,24 @@ describe('routes', () => {
       .get('/messages/email/1/recipients/22')
       .reply(200, messageData )
 
+    const opensData = [{ 'event_at':'2016-09-08T05:55:05Z' }]
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients/22/opens')
+      .reply(200, opensData )
+
+    const clicksData = [{ 'event_at':'2016-09-08T07:57:07Z' }]
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients/22/clicks')
+      .reply(200, clicksData )
+
+
     agent
       .get('/e/1/r/22')
       .end((err, res) => {
         res.should.have.status(200)
         res.text.should.contain('sent')
+        res.text.should.contain('05:55:05Z')
+        res.text.should.contain('07:57:07Z')
 
         nock.isDone().should.be.true
         done()
