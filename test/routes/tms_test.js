@@ -116,6 +116,42 @@ describe('routes', () => {
       })
   })
 
+  it ('should show recipient detail', (done) => {
+    const messageData = {'email':'test@example.com',
+                         'macros':null,
+                         'status':'sent',
+                         'created_at':'2016-09-07T17:41:11Z',
+                         'completed_at':'2016-09-07T17:41:41Z',
+                         '_links':{'self':'/messages/email/1/recipients/22','email_message':'/messages/email/1','opens':'/messages/email/1/recipients/22/opens','clicks':'/messages/email/1/recipients/22/clicks'}
+                         }
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients/22')
+      .reply(200, messageData )
+
+    const opensData = [{ 'event_at':'2016-09-08T05:55:05Z' }]
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients/22/opens')
+      .reply(200, opensData )
+
+    const clicksData = [{ 'event_at':'2016-09-08T07:57:07Z' }]
+    nock(process.env.TMS_URL)
+      .get('/messages/email/1/recipients/22/clicks')
+      .reply(200, clicksData )
+
+
+    agent
+      .get('/e/1/r/22')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('sent')
+        res.text.should.contain('05:55:05Z')
+        res.text.should.contain('07:57:07Z')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
   it ('should show email messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/email?sort_by=created_at&sort_order=DESC')
@@ -223,12 +259,12 @@ describe('routes', () => {
                    {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
-                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
-                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/44444'}}])
 
     const fourth = nock(process.env.TMS_URL)
       .get('/messages/sms')
@@ -236,12 +272,12 @@ describe('routes', () => {
                    {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
     const fifth = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
-                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/22222'}}])
     const sixth = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
-                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/44444'}}])
 
     agent
       .get('/slurpe')
@@ -267,12 +303,12 @@ describe('routes', () => {
                    {'id': 2, 'subject': 'second email', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/email/1/recipients')
-      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/11111'}},
-                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'email': 'r.fong@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/11111'}},
+                   {'email': 'e.ebbesen@sink.granicus.com', '_links':{'email_message':'/messages/email/1', 'self': '/messages/email/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/email/2/recipients')
-      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/33333'}},
-                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'email': 'r.fong2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/33333'}},
+                   {'email': 'e.ebbesen2@sink.granicus.com', '_links':{'email_message':'/messages/email/2', 'self': '/messages/email/2/recipients/44444'}}])
 
     agent
       .get('/slurpe')
@@ -295,12 +331,12 @@ describe('routes', () => {
                    {'id': 2, 'body': 'second sms', 'created_at':'2017-02-30T17:45:27Z'}])
     const second = nock(process.env.TMS_URL)
       .get('/messages/sms/1/recipients')
-      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/1/recipient/11111'}},
-                   {'phone': '16515557878', '_links':{'sms_message':'/messages/1/recipient/22222'}}])
+      .reply(200, [{'phone': '16515551212', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/11111'}},
+                   {'phone': '16515557878', '_links':{'sms_message':'/messages/sms/1', 'self': '/messages/sms/1/recipients/22222'}}])
     const third = nock(process.env.TMS_URL)
       .get('/messages/sms/2/recipients')
-      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/2/recipient/33333'}},
-                   {'phone': '16515557879', '_links':{'sms_message':'/messages/2/recipient/44444'}}])
+      .reply(200, [{'phone': '16515551213', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/33333'}},
+                   {'phone': '16515557879', '_links':{'sms_message':'/messages/sms/2', 'self': '/messages/sms/2/recipients/44444'}}])
 
     return agent
       .get('/slurps')
@@ -411,7 +447,7 @@ describe('routes', () => {
       })
   })
 
-  describe ('sending email', () => {
+  describe ('sending sms', () => {
     beforeEach(function() {
       const mockData = {
         body: 'Hi!',
@@ -625,7 +661,9 @@ describe('routes', () => {
 
       const recipient1 = new Recipient({
         messageId: 1001,
-        email: 'first@example.com'
+        email: 'first@example.com',
+        recipientId: 1111
+
       })
       const saveRecipientPromise1 = recipient1.save(err => {
         if(err) {
@@ -635,7 +673,8 @@ describe('routes', () => {
 
       const recipient2 = new Recipient({
         messageId: 1001,
-        email: 'second@example.com'
+        email: 'second@example.com',
+        recipientId: 2222
       })
       const saveRecipientPromise2 = recipient2.save(err => {
         if(err) {
@@ -657,7 +696,8 @@ describe('routes', () => {
 
       const recipient3 = new Recipient({
         messageId: 1003,
-        phone: '16515551212'
+        phone: '16515551212',
+        recipientId: 3333
       })
       const saveSmsRecipientPromise = recipient3.save(err => {
         if(err) {
@@ -689,6 +729,7 @@ describe('routes', () => {
         .end((err, res) => {
           res.should.have.status(200)
           res.text.should.contain('<td>1001</td>')
+          res.text.should.contain("location.href='/e/1001/r/1111'")
 
           done(err)
         })

@@ -203,8 +203,9 @@ module.exports = {
   getSaveRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
       const messageId = recipient._links.email_message.split('/')[3]
-      const query = {messageId: messageId, email: recipient.email}
-      const data = Object.assign({}, query)
+      const recipientId = recipient._links.self.split('/')[5]
+      const query = { messageId: messageId, email: recipient.email }
+      const data = Object.assign({}, query, { recipientId: recipientId })
 
       return Recipient.update(query, data, {upsert: true}, function(err) {
         if (err) {
@@ -221,8 +222,9 @@ module.exports = {
   getSaveSmsRecipientPromises: function (recipients) {
     return [].concat(...recipients).map((recipient) => {
       const messageId = recipient._links.sms_message.split('/')[3]
+      const recipientId = recipient._links.self.split('/')[5]
       const query = {messageId: messageId, phone: recipient.phone}
-      const data = Object.assign({}, query)
+      const data = Object.assign({}, query, { recipientId: recipientId })
 
       return Recipient.update(query, data, {upsert: true}, function(err) {
         if (err) {
@@ -324,7 +326,7 @@ module.exports = {
     return recipients.map((recipient) => {
       return module.exports.findMessage(recipient.messageId)
         .then(message => {
-          return Object.assign({email: recipient.email, messageId: recipient.messageId}, {date: message.date, subject: message.subject})
+          return Object.assign({email: recipient.email, messageId: recipient.messageId, recipientId: recipient.recipientId}, {date: message.date, subject: message.subject})
         })
     })
   },
@@ -333,7 +335,7 @@ module.exports = {
     return recipients.map((recipient) => {
       return module.exports.findSmsMessage(recipient.messageId)
         .then(message => {
-          return Object.assign({phone: recipient.phone, messageId: recipient.messageId}, {date: message.date, body: message.body})
+          return Object.assign({phone: recipient.phone, messageId: recipient.messageId, recipientId: recipient.recipientId}, {date: message.date, body: message.body})
         })
     })
   },

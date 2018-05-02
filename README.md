@@ -10,6 +10,7 @@ Uses [the GovDelivery TMS API](http://developer.govdelivery.com/api/tms/) to dis
 
 ### Manually
 1. Install node (need instructions)
+  * On OS X `brew install node`
 1. Install project dependencies with `npm install`
 1. Install MongoDB with `brew install mongodb`
 1. Start MongoDB with `brew services start mongodb`
@@ -78,4 +79,9 @@ db.emails.find()
 ```
 db.emails.remove({})
 db.recipients.remove({})
+```
+
+## cURL for testing
+```
+curl -vvv -L -H "X-AUTH-TOKEN: <your_token>" -H "Content-Type: application/json"  https://stage-tms.govdelivery.com/messages/email
 ```

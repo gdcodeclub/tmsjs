@@ -201,5 +201,33 @@ router.get('/searchs', function(req, res) {
     })
 })
 
+// use recipientHelper to collect engagement, decorate and sort by date
+router.get('/e/:messageId/r/:recipientId', function(req, res) {
+  return engine
+    .get('/messages/email/' + req.params.messageId + '/recipients/' + req.params.recipientId)
+    .then(function(result){
+      return result.data
+    })
+    .then((recipientMessageData) => {
+      return engine
+        .get('/messages/email/' + req.params.messageId + '/recipients/' + req.params.recipientId + '/opens')
+        .then((opensData) => {
+          return { data: recipientMessageData, opens: opensData.data }
+        })
+    })
+    .then((recipientData) => {
+      return engine
+        .get('/messages/email/' + req.params.messageId + '/recipients/' + req.params.recipientId + '/clicks')
+        .then((clicksData) => {
+          res.render('../views/recipient', {data: recipientData.data, opens: recipientData.opens, clicks: clicksData.data})
+        })
+    })
+    .catch(function(error){
+      recipientHelper.log('error getting data from TMS /messages/email/' + req.params.messageId + '/recipients/' + req.params.recipientId, error)
+      res.redirect('/')
+    })
+
+})
+
 
 module.exports = router
