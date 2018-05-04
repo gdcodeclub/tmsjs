@@ -20,7 +20,7 @@
         </thead>
         <tbody>
           <% data.map(function(d){ %>
-            <tr onclick="location.href='/s/<%= d.messageId %>'" style="cursor: pointer;">
+            <tr onclick="location.href='/s/<%= d.messageId %>/r/<%= d.recipientId %>'" style="cursor: pointer;">
               <td><%= d.messageId %></td>
               <td><%= d.date %></td>
               <td><%= d.body %></td>
