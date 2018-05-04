@@ -189,6 +189,60 @@ describe('routes', () => {
       })
   })
 
+  it ('should show sms recipient detail with error', (done) => {
+    const messageData = {'phone':'16515551212',
+                         'formatted_phone':'+16515551212',
+                         'status':'sent',
+                         'error_message':"The 'To' number +16515551212 is not a valid phone number.",
+                         'created_at':'2016-09-07T17:41:11Z',
+                         'completed_at':'2016-09-07T17:42:42Z',
+                         '_links':{'self':'/messages/sms/1/recipients/22','sms_message':'/messages/sms/1'}
+                         }
+    nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients/22')
+      .reply(200, messageData )
+
+    agent
+      .get('/s/1/r/22')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('sent')
+        res.text.should.contain('17:41:11Z')
+        res.text.should.contain('7:42:42Z')
+        res.text.should.contain('is not a valid phone number')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
+  it ('should show sms recipient detail without error', (done) => {
+    const messageData = {'phone':'16515551212',
+                         'formatted_phone':'+16515551212',
+                         'status':'sent',
+                         'error_message':"",
+                         'created_at':'2016-09-07T17:41:11Z',
+                         'completed_at':'2016-09-07T17:42:42Z',
+                         '_links':{'self':'/messages/sms/1/recipients/22','sms_message':'/messages/sms/1'}
+                         }
+    nock(process.env.TMS_URL)
+      .get('/messages/sms/1/recipients/22')
+      .reply(200, messageData )
+
+    agent
+      .get('/s/1/r/22')
+      .end((err, res) => {
+        res.should.have.status(200)
+        res.text.should.contain('sent')
+        res.text.should.contain('17:41:11Z')
+        res.text.should.contain('7:42:42Z')
+        res.text.should.not.contain('Error')
+
+        nock.isDone().should.be.true
+        done()
+      })
+  })
+
   it ('should show sms messages', (done) => {
     nock(process.env.TMS_URL)
       .get('/messages/sms?sort_by=created_at&sort_order=DESC')
