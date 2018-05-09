@@ -85,7 +85,26 @@ describe('routes', () => {
   it('should show from addresses', (done) => {
     nock(process.env.TMS_URL)
       .get('/from_addresses')
-      .reply(200, [{from_email: 'first@from.com'}, {from_email: 'second@from.com'}] )
+      .reply(200, [
+        {
+          id: '8675309',
+          from_email: 'first@from.com',
+          from_name: 'First Mailer',
+          reply_to_email: 'reply@from.com',
+          bounce_email: 'bounce@from.com',
+          is_default: false,
+          created_at: '2016-06-06T17:04:29Z'
+        },
+        {
+          id: '8675310',
+          from_email: 'second@from.com',
+          from_name: 'Second Mailer',
+          reply_to_email: 'second.reply@from.com',
+          bounce_email: 'second.bounce@from.com',
+          is_default: true,
+          created_at: '2017-06-06T17:04:29Z'
+        }
+      ])
 
     agent
       .get('/fa')
@@ -93,7 +112,12 @@ describe('routes', () => {
         res.should.have.status(200)
         res.text.should.contain('From Addresses')
         res.text.should.contain('first@from.com')
+        res.text.should.contain('First Mailer')
+        res.text.should.contain('8675309')
+        res.text.should.contain('reply@from.com')
+        res.text.should.contain('bounce@from.com')
         res.text.should.contain('second@from.com')
+        res.text.should.contain('This is the default from address')
 
         nock.isDone().should.be.true
         done()
