@@ -6,11 +6,40 @@
     </div>
     <div class="settings">
       <h2>From Addresses</h2>
-      <ul class="list-group">
-        <% data.map(function(d){ %>
-          <li class="list-group-item"><%= d.from_email %></li>
-        <%})%>
-      </ul>
+      <div class="container col-lg-6 col-md-6">
+        <div class="panel panel-default">
+          <% data.map(function(d){ %>
+            <table class="table table-sm">
+              <tr class="active">
+                <th>From Email</th>
+                <th><%= d.from_email %></th>
+              </tr>
+              <tr>
+                <td>From Name</td>
+                <td><%= d.from_name %></td>
+              </tr>
+              <tr>
+                <td>Reply To Email</td>
+                <td><%= d.reply_to_email %></td>
+              </tr>
+              <tr>
+                <td>Bounce Email</td>
+                <td><%= d.bounce_email %></td>
+              </tr>
+              <tr>
+                <td>ID</td>
+                <td><%= d.id %></td>
+              </tr>
+              <% if (d.is_default) { %>
+                <tr class="info">
+                  <td>This is the default from address</td>
+                  <td></td>
+                </tr>
+              <% } %>
+            </table>
+          <% }) %>
+        </div>
+      </div>
     </div>
   </div>
 <% include partials/footer%>
