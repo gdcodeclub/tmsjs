@@ -9,7 +9,7 @@ Uses [the GovDelivery TMS API](http://developer.govdelivery.com/api/tms/) to dis
 1. Set TMS_KEY to your API key with `export TMS_KEY=abcd123`
 
 ### Manually
-1. Install node (need instructions)
+1. Install node
   * On OS X `brew install node`
 1. Install project dependencies with `npm install`
 1. Install MongoDB with `brew install mongodb`
