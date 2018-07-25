@@ -4,8 +4,8 @@
   "description": "TMS client in JavaScript",
   "main": "app.js",
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha test/*",
-    "itest": "istanbul cover node_modules/mocha/bin/_mocha test/*",
+    "test": "node_modules/mocha/bin/mocha --exit test/*",
+    "itest": "istanbul cover node_modules/mocha/bin/_mocha --exit test/*",
     "start": "node app.js"
   },
   "author": "Eric Ebbesen <eebbesen.git@gmail.com>",
@@ -37,7 +37,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "http": "0.0.0",
     "istanbul": "^0.4.5",
-    "mocha": "^3.4.2",
+    "mocha": "^5.2.0",
     "nock": "^9.0.13",
     "should": "^11.2.1",
     "sinon": "^6.1.4",
