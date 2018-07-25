@@ -62,7 +62,7 @@ describe ('recipient_helper', () => {
 
     return savePromise
       .then(res => {
-        res.date.toString().should.equal(rec.date.toString())
+        res.date.toString().should.equal(rec.date.toString()+'22')
       })
       .then(() => {
         return recipientHelper.readLastDownloadDate()
