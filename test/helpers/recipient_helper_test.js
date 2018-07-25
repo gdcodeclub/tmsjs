@@ -2,6 +2,7 @@ process.env.TMS_URL = 'https://fake.tms.url.com'
 process.env.TMS_KEY = 'hU5Hn0w'
 process.env.DATABASEURL = 'mongodb://localhost/test_tmsjs'
 
+const mongoose = require('mongoose');
 const chai = require('chai')
 const chaiHttp = require('chai-http')
 var chaiAsPromised = require('chai-as-promised')
@@ -21,7 +22,18 @@ chai.use(chaiHttp)
 chai.use(chaiAsPromised)
 
 describe ('recipient_helper', () => {
-  beforeEach(() => {
+  beforeEach(function() {
+    if (mongoose.connection.db) {
+      console.log('Already have a db connection')
+    } else {
+      mongoose.connect('mongodb://localhost/testDatabase');
+    }
+    const db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error'));
+    db.once('open', function() {
+      console.log('We are connected to test database!');
+    });
+
     return Email.remove({})
       .then(() => {
         return Sms.remove({})
@@ -33,6 +45,12 @@ describe ('recipient_helper', () => {
           })
       })
   })
+
+  // afterEach(function(){
+  //   mongoose.connection.db.dropDatabase(function(){
+  //     mongoose.connection.close();
+  //   });
+  // });
 
   it ('should execute promises (executePromises)', () => {
     const p1 = new Promise(function(resolve) {
@@ -715,7 +733,6 @@ describe ('recipient_helper', () => {
       })
       .then(() => {
         return Recipient.findOne({'phone': '16515551212'}, function(err, recipient) {
-          console.log('xxxxx', recipient)
           recipient.messageId.should.eq('1')
           recipient.phone.should.eq('16515551212')
           recipient.recipientId.should.eq('11111')
