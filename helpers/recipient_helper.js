@@ -349,7 +349,7 @@ module.exports = {
       console.log('error would have been logged -- see recipient_helper.log')
       return true
     }
-    console.log(message, error)
+    return error
   }
 
 }

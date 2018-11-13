@@ -22,8 +22,7 @@ router.get('/fa', function(req, res){
     .then(function(result){
       res.render('../views/account_info', {data: result.data})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -34,8 +33,7 @@ router.get('/m', function(req, res){
     .then(function(result){
       res.render('../views/email_messages', {data: result.data, sort: 'DESC', sort_next: 'ASC'})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -46,8 +44,7 @@ router.get('/s', function(req, res){
     .then(function(result){
       res.render('../views/sms_messages', {data: result.data, sort: 'DESC', sort_next: 'ASC'})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -68,8 +65,7 @@ router.get('/slurpe', function(req, res){
       res.redirect('/')
     })
     .catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -79,8 +75,7 @@ router.get('/slurps', function(req, res){
       res.redirect('/')
     })
     .catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -101,8 +96,7 @@ router.post('/', function(req, res){
     .then(() => {
       res.redirect('/saved_messages')
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -122,8 +116,7 @@ router.post('/sms', function(req, res){
     .then(() => {
       res.redirect('/saved_sms_messages')
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -151,8 +144,7 @@ router.get('/e/:message_id', function(req, res){
     .then(function(result){
       res.render('../views/email_message', {data: result.data})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -162,8 +154,7 @@ router.get('/s/:message_id', function(req, res){
     .then(function(result){
       res.render('../views/sms_message', {data: result.data})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS: did you set TMS_KEY?', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -183,8 +174,7 @@ router.get('/searche', function(req, res) {
     .then(function(recipients) {
       res.render('../views/recipients', {data: recipients, email: req.query.email})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS recipients: ', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
@@ -196,8 +186,7 @@ router.get('/searchs', function(req, res) {
     .then(function(recipients) {
       res.render('../views/sms_recipients', {data: recipients, phone: req.query.phone})
     }).catch(function(error){
-      recipientHelper.log('error getting data from TMS recipients: ', error)
-      res.redirect('/')
+      res.render('../views/error', {data: recipientHelper.log("ERROR", error)})
     })
 })
 
