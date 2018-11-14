@@ -1,5 +1,4 @@
 const express = require('express')
-// const app = express()
 const router = express.Router()
 const axios = require('axios')
 const engine = axios.create({
@@ -10,14 +9,11 @@ const recipientHelper = require('../helpers/recipient_helper')
 console.log('TMS baseURL set to ' + process.env.TMS_URL)
 console.log('Auth Token is ' + process.env.TMS_KEY)
 
-// app.use(express.static(__dirname+'/public/images'))
-
 router.get('/', function(req, res){
   return recipientHelper.readLastDownloadDate()
     .then(dates => {
       res.render('../views/home', {data: dates})
     })
-
 })
 
 router.get('/fa', function(req, res){
