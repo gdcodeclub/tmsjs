@@ -132,8 +132,8 @@ describe('routes', () => {
     agent
       .get('/fa')
       .end((err, res) => {
-        res.should.have.status(302)
-        res.should.redirectTo('/')
+        res.should.have.status(200)
+        res.should.redirectTo('/views/error')
 
         nock.isDone().should.be.true
         done()
@@ -206,7 +206,7 @@ describe('routes', () => {
       .get('/m')
       .end((err, res) => {
         res.should.have.status(302)
-        res.should.redirectTo('/')
+        res.should.redirectTo('/views/error')
 
         nock.isDone().should.be.true
         done()
@@ -294,7 +294,7 @@ describe('routes', () => {
       .get('/s')
       .end((err, res) => {
         res.should.have.status(302)
-        res.should.redirectTo('/')
+        res.should.redirectTo('/views/error')
 
         nock.isDone().should.be.true
         done()
@@ -435,7 +435,7 @@ describe('routes', () => {
       .get('/slurpe')
       .then(res => {
         res.should.have.status(302)
-        res.should.redirectTo('/')
+        res.should.redirectTo('/views/error')
         first.isDone().should.be.true
 
         done()
@@ -519,7 +519,7 @@ describe('routes', () => {
       .send(message)
       .end((err, res) => {
         res.should.have.status(302)
-        res.should.redirectTo('/')
+        res.should.redirectTo('/views/error')
 
         done(err)
       })

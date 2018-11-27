@@ -345,15 +345,17 @@ module.exports = {
    * for debugging you may want to modify this method temporarily to see full error
    */
   log: function(message, error) {
-    const errorData = {
-      errorMessageResponse: error.response.data.error,
-      tokenUsed: error.config.headers["X-Auth-Token"]
-    }
     if (process.env.TMS_URL == 'https://fake.tms.url.com') {
       console.log('error would have been logged -- see recipient_helper.log')
       return true
-    }
-    return errorData
+    } 
+    console.log(message)
   }
 
 }
+
+
+
+
+
+
