@@ -127,12 +127,12 @@ describe('routes', () => {
   it('should handle error during show from addresses', (done) => {
     nock(process.env.TMS_URL)
       .get('/from_addresses')
-      .replyWithError('error')
+      .replyWithError({'data' : 'error'});
 
     agent
       .get('/fa')
       .end((err, res) => {
-        res.should.have.status(200)
+        res.should.have.status(302)
         res.should.redirectTo('/views/error')
 
         nock.isDone().should.be.true

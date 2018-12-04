@@ -350,6 +350,14 @@ module.exports = {
       return true
     } 
     console.log(message)
+  },
+
+  errorHandler: function(err, req, res, next) {
+    if (res.headersSent) {
+      return next(err)
+    }
+    res.status(500)
+    res.render('../views/error', { error: error })
   }
 
 }
