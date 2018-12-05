@@ -127,7 +127,7 @@ describe('routes', () => {
   it('should handle error during show from addresses', (done) => {
     nock(process.env.TMS_URL)
       .get('/from_addresses')
-      .replyWithError('error');
+      .replyWithError('error')
 
     agent
       .get('/fa')
