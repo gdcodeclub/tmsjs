@@ -348,8 +348,7 @@ module.exports = {
     if (process.env.TMS_URL == 'https://fake.tms.url.com') {
       console.log('error would have been logged -- see recipient_helper.log')
       return true
-    }
+    } 
     console.log(message, error)
   }
-
 }

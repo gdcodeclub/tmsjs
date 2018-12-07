@@ -20,7 +20,7 @@
     "express-promise-router": "^1.1.1",
     "method-override": "^2.3.9",
     "mongoose": "^4.10.7",
-    "npm": "^6.2.0",
+    "npm": "^6.4.1",
     "request": "^2.81.0",
     "seeds": "^2.3.1"
   },
@@ -43,5 +43,15 @@
     "sinon": "^6.1.4",
     "supertest": "^3.0.0"
   },
-  "repository": "git@github.com:gdcodeclub/tmsjs.git"
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/gdcodeclub/tmsjs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gdcodeclub/tmsjs/issues"
+  },
+  "homepage": "https://github.com/gdcodeclub/tmsjs#readme",
+  "directories": {
+    "test": "test"
+  }
 }
